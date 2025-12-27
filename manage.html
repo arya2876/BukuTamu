@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kelola Daftar Tamu - Buku Tamu Digital">
+    <title>Kelola Tamu | Buku Tamu Digital</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-navbar">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="fas fa-book-open me-2"></i>Buku Tamu
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="input.html"><i class="fas fa-user-plus me-1"></i>Input</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="manage.html"><i class="fas fa-users-cog me-1"></i>Kelola</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="scan.html"><i class="fas fa-qrcode me-1"></i>Scan</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <h1 class="animate-fade-in">
+                <i class="fas fa-users-cog me-3"></i>Kelola Daftar Tamu
+            </h1>
+            <p class="animate-fade-in-delay">Cari, lihat, edit, dan hapus data tamu</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Search & Stats Bar -->
+            <div class="glass-card mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="search-box-large">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Cari nama, email, atau telepon...">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-md-end gap-3 flex-wrap">
+                            <div class="stat-badge">
+                                <i class="fas fa-users"></i>
+                                <span id="totalCount">0</span> Total
+                            </div>
+                            <div class="stat-badge success">
+                                <i class="fas fa-check-circle"></i>
+                                <span id="checkedInCount">0</span> Hadir
+                            </div>
+                            <div class="stat-badge warning">
+                                <i class="fas fa-clock"></i>
+                                <span id="pendingCount">0</span> Pending
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guest Table -->
+            <div class="glass-card table-card">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="guestTable">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>Telepon</th>
+                                <th>Status</th>
+                                <th>Tanggal</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="guestTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-inbox"></i>
+                    <p>Belum ada data tamu</p>
+                    <a href="input.html" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus me-2"></i>Tambah Tamu Baru
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- QR Code Modal -->
+    <div class="modal fade" id="qrModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-qrcode me-2"></i>QR Code Tamu</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <h4 id="modalGuestName" class="mb-3"></h4>
+                    <div id="modalQRCode" class="qr-container mb-3"></div>
+                    <p class="qr-code-text" id="modalQRText"></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" id="modalDownloadQR">
+                        <i class="fas fa-download me-2"></i>Download
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Data Tamu</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="editId">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="editNama" required>
+                            <label for="editNama">Nama Lengkap</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="editEmail" required>
+                            <label for="editEmail">Email</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="tel" class="form-control" id="editTelepon" required>
+                            <label for="editTelepon">Telepon</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" id="editPesan" style="height: 100px" required></textarea>
+                            <label for="editPesan">Pesan</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" form="editForm" class="btn btn-warning">
+                        <i class="fas fa-save me-2"></i>Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-modal">
+                <div class="modal-header border-danger">
+                    <h5 class="modal-title text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Konfirmasi Hapus
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
+                    <p class="mb-0">Apakah Anda yakin ingin menghapus <strong id="deleteGuestName"></strong>?</p>
+                    <p class="text-muted small">Tindakan ini tidak dapat dibatalkan</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">
+                        <i class="fas fa-trash me-2"></i>Hapus
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-bell me-2" id="toastIcon"></i>
+                <strong class="me-auto" id="toastTitle">Notifikasi</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="mb-0"><i class="fas fa-code me-2"></i>Buku Tamu Digital &copy; 2024</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- QRCode.js (Browser-ready) -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- Custom JS -->
+    <script src="js/shared.js"></script>
+    <script src="js/manage.js"></script>
+</body>
+
+</html>

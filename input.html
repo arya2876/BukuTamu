@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Input Tamu Baru - Buku Tamu Digital">
+    <title>Input Tamu | Buku Tamu Digital</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-navbar">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="fas fa-book-open me-2"></i>Buku Tamu
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="input.html">
+                            <i class="fas fa-user-plus me-1"></i>Input
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage.html">
+                            <i class="fas fa-users-cog me-1"></i>Kelola
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="scan.html">
+                            <i class="fas fa-qrcode me-1"></i>Scan
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <h1 class="animate-fade-in">
+                <i class="fas fa-user-plus me-3"></i>Input Tamu Baru
+            </h1>
+            <p class="animate-fade-in-delay">Tambahkan tamu baru dan dapatkan QR Code unik</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <!-- Form Section -->
+                <div class="col-lg-6" id="form-section">
+                    <div class="glass-card form-card">
+                        <div class="card-header-custom">
+                            <h3 class="mb-0">
+                                <i class="fas fa-edit me-2"></i>Data Tamu
+                            </h3>
+                        </div>
+                        <form id="guestForm" novalidate>
+                            <!-- Nama -->
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="nama" placeholder="Nama Lengkap" required
+                                    minlength="3">
+                                <label for="nama"><i class="fas fa-user me-2"></i>Nama Lengkap</label>
+                                <div class="invalid-feedback">Nama harus diisi minimal 3 karakter</div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="form-floating mb-3">
+                                <input type="email" class="form-control" id="email" placeholder="Email" required>
+                                <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
+                                <div class="invalid-feedback">Masukkan email yang valid</div>
+                            </div>
+
+                            <!-- Telepon -->
+                            <div class="form-floating mb-3">
+                                <input type="tel" class="form-control" id="telepon" placeholder="Telepon" required
+                                    pattern="[0-9]{10,13}">
+                                <label for="telepon"><i class="fas fa-phone me-2"></i>Nomor Telepon</label>
+                                <div class="invalid-feedback">Masukkan nomor telepon valid (10-13 digit)</div>
+                            </div>
+
+                            <!-- Pesan -->
+                            <div class="form-floating mb-4">
+                                <textarea class="form-control" id="pesan" placeholder="Pesan" style="height: 120px"
+                                    required minlength="10"></textarea>
+                                <label for="pesan"><i class="fas fa-comment me-2"></i>Pesan / Komentar</label>
+                                <div class="invalid-feedback">Pesan harus diisi minimal 10 karakter</div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                    <i class="fas fa-save me-2"></i>Simpan & Generate QR Code
+                                </button>
+                                <button type="reset" class="btn btn-outline-secondary" id="resetBtn">
+                                    <i class="fas fa-undo me-2"></i>Reset Form
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- QR Code Result Section (Hidden by default) -->
+                <div class="col-lg-6" id="qr-section" style="display: none;">
+                    <div class="glass-card qr-result-card text-center">
+                        <div class="success-icon mb-3">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 class="mb-3">Tamu Berhasil Ditambahkan!</h3>
+                        <div class="guest-info mb-4">
+                            <h4 id="guestName" class="text-gradient"></h4>
+                            <p id="guestEmail" class="text-muted mb-0"></p>
+                        </div>
+
+                        <div class="qr-container mb-4">
+                            <div id="qrcode"></div>
+                            <p class="qr-code-text mt-2 mb-0" id="qrCodeText"></p>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success btn-lg" id="downloadQR">
+                                <i class="fas fa-download me-2"></i>Download QR Code
+                            </button>
+                            <button class="btn btn-primary" id="addAnother">
+                                <i class="fas fa-plus me-2"></i>Tambah Tamu Lagi
+                            </button>
+                            <a href="manage.html" class="btn btn-outline-secondary">
+                                <i class="fas fa-list me-2"></i>Lihat Daftar Tamu
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-bell me-2" id="toastIcon"></i>
+                <strong class="me-auto" id="toastTitle">Notifikasi</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="mb-0">
+                <i class="fas fa-code me-2"></i>Buku Tamu Digital &copy; 2024
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- QRCode.js (Browser-ready) -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- Custom JS -->
+    <script src="js/shared.js"></script>
+    <script src="js/input.js"></script>
+</body>
+
+</html>
