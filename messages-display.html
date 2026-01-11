@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AW Digital Guestbook - Guest Messages Display">
+    <title>Messages Display | AW Digital Guestbook</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        .display-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .display-header {
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .display-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+        }
+
+        .message-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 32px;
+            padding: 4rem;
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+            animation: slideIn 0.8s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .guest-initial {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .message-text {
+            font-size: 2rem;
+            line-height: 1.8;
+            color: white;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .message-text::before,
+        .message-text::after {
+            content: '"';
+            font-size: 4rem;
+            color: var(--accent-color);
+            opacity: 0.5;
+            position: absolute;
+        }
+
+        .message-text::before {
+            top: -1rem;
+            left: -2rem;
+        }
+
+        .message-text::after {
+            bottom: -2rem;
+            right: -2rem;
+        }
+
+        .guest-name {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .stats-bar {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .no-messages {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-color);
+            animation: progressFill 8s linear;
+        }
+
+        @keyframes progressFill {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="display-container">
+        <!-- Header -->
+        <header class="display-header">
+            <h3 class="mb-0">
+                <i class="fas fa-comment-dots me-2"></i>
+                Ucapan & Doa
+            </h3>
+            <h4 class="mb-0" id="eventName">-</h4>
+        </header>
+
+        <!-- Main Display -->
+        <main class="display-main">
+            <!-- Message Card -->
+            <div class="message-card" id="messageCard">
+                <div class="guest-initial" id="guestInitial">-</div>
+                <p class="message-text" id="messageText">-</p>
+                <p class="guest-name" id="guestName">-</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressBar"></div>
+                </div>
+            </div>
+
+            <!-- No Messages -->
+            <div class="no-messages d-none" id="noMessages">
+                <i class="fas fa-comments fa-5x mb-4" style="opacity: 0.3;"></i>
+                <h3>Menunggu Pesan...</h3>
+                <p>Pesan dari tamu akan ditampilkan di sini</p>
+            </div>
+        </main>
+
+        <!-- Stats Bar -->
+        <footer class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">Total Pesan</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statCheckedIn">0</div>
+                <div class="stat-label">Tamu Hadir</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statTime">--:--</div>
+                <div class="stat-label">Waktu</div>
+            </div>
+        </footer>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="btn btn-outline-light btn-sm" onclick="togglePause()">
+                <i class="fas fa-pause" id="pauseIcon"></i>
+            </button>
+            <button class="btn btn-outline-light btn-sm" onclick="prevMessage()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="btn btn-outline-light btn-sm" onclick="nextMessage()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            <button class="btn btn-outline-light btn-sm" onclick="toggleFullscreen()">
+                <i class="fas fa-expand"></i>
+            </button>
+            <a href="dashboard.html" class="btn btn-outline-danger btn-sm">
+                <i class="fas fa-times"></i>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'api';
+        let currentEventId = null;
+        let messages = [];
+        let currentIndex = 0;
+        let isPaused = false;
+        let slideInterval = null;
+        const SLIDE_DURATION = 8000; // 8 seconds per message
+
+        // Get event from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        currentEventId = urlParams.get('event');
+
+        if (!currentEventId) {
+            alert('Event tidak dipilih');
+            window.location.href = 'dashboard.html';
+        }
+
+        // Load event details
+        async function loadEventDetails() {
+            try {
+                const response = await fetch(`${API_BASE}/events.php?id=${currentEventId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('eventName').textContent = data.data.name;
+                    document.getElementById('statCheckedIn').textContent = data.data.checkedInCount || 0;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Load messages
+        async function loadMessages() {
+            try {
+                const response = await fetch(`${API_BASE}/guests.php?event_id=${currentEventId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    // Filter guests with messages
+                    messages = data.data.filter(g => g.pesan && g.pesan.trim().length > 10);
+                    document.getElementById('statTotal').textContent = messages.length;
+
+                    if (messages.length === 0) {
+                        document.getElementById('messageCard').classList.add('d-none');
+                        document.getElementById('noMessages').classList.remove('d-none');
+                    } else {
+                        document.getElementById('messageCard').classList.remove('d-none');
+                        document.getElementById('noMessages').classList.add('d-none');
+                        showMessage(currentIndex);
+                        startSlideshow();
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Show message
+        function showMessage(index) {
+            if (messages.length === 0) return;
+
+            const message = messages[index];
+            const initial = message.nama.charAt(0).toUpperCase();
+
+            document.getElementById('guestInitial').textContent = initial;
+            document.getElementById('messageText').textContent = message.pesan;
+            document.getElementById('guestName').textContent = message.nama;
+
+            // Reset animation
+            const card = document.getElementById('messageCard');
+            card.style.animation = 'none';
+            card.offsetHeight; // trigger reflow
+            card.style.animation = 'slideIn 0.8s ease';
+
+            // Reset progress bar
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.animation = 'none';
+            progressBar.offsetHeight;
+            progressBar.style.animation = `progressFill ${SLIDE_DURATION}ms linear`;
+        }
+
+        // Start slideshow
+        function startSlideshow() {
+            if (slideInterval) clearInterval(slideInterval);
+
+            slideInterval = setInterval(() => {
+                if (!isPaused) {
+                    nextMessage();
+                }
+            }, SLIDE_DURATION);
+        }
+
+        // Next message
+        function nextMessage() {
+            currentIndex = (currentIndex + 1) % messages.length;
+            showMessage(currentIndex);
+        }
+
+        // Previous message
+        function prevMessage() {
+            currentIndex = (currentIndex - 1 + messages.length) % messages.length;
+            showMessage(currentIndex);
+        }
+
+        // Toggle pause
+        function togglePause() {
+            isPaused = !isPaused;
+            const icon = document.getElementById('pauseIcon');
+            icon.classList.toggle('fa-pause', !isPaused);
+            icon.classList.toggle('fa-play', isPaused);
+        }
+
+        // Toggle fullscreen
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('statTime').textContent = time;
+        }
+
+        // Refresh messages periodically
+        setInterval(loadMessages, 30000); // Every 30 seconds
+
+        // Update time every second
+        setInterval(updateTime, 1000);
+
+        // Initialize
+        loadEventDetails();
+        loadMessages();
+        updateTime();
+    </script>
+</body>
+
+</html>

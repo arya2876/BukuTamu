@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Scan QR Code Tamu - Buku Tamu Digital">
-    <title>Scan QR Code | Buku Tamu Digital</title>
+    <meta name="description" content="AW Digital Guestbook - Scan QR Code">
+    <title>Scan QR | AW Digital Guestbook</title>
 
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,16 +14,63 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <!-- HTML5 QRCode -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        #qr-reader {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        #qr-reader video {
+            border-radius: 16px;
+        }
+
+        .scan-result {
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .verified-badge {
+            font-size: 4rem;
+            color: var(--success-color);
+            animation: pulse 1s ease infinite;
+        }
+
+        .already-checked {
+            font-size: 4rem;
+            color: var(--warning-color);
+        }
+
+        .invalid-badge {
+            font-size: 4rem;
+            color: var(--danger-color);
+        }
+    </style>
 </head>
 
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-navbar">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="index.html">
-                <i class="fas fa-book-open me-2"></i>Buku Tamu
+            <a class="navbar-brand fw-bold" href="dashboard.html">
+                <i class="fas fa-book-open me-2"></i>AW Digital
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -31,175 +78,157 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i>Home</a>
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="input.html"><i class="fas fa-user-plus me-1"></i>Input</a>
+                        <a class="nav-link" href="input.html">
+                            <i class="fas fa-user-plus me-1"></i>Input
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="manage.html"><i class="fas fa-users-cog me-1"></i>Kelola</a>
+                        <a class="nav-link" href="manage.html">
+                            <i class="fas fa-users-cog me-1"></i>Kelola
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="scan.html"><i class="fas fa-qrcode me-1"></i>Scan</a>
+                        <a class="nav-link active" href="scan.html">
+                            <i class="fas fa-qrcode me-1"></i>Scan
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="eventDropdown" role="button"
+                            data-bs-toggle="dropdown">
+                            <i class="fas fa-calendar-alt me-1"></i><span id="currentEventName">Event</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end glass-modal" id="eventsList"></ul>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Page Header -->
-    <header class="page-header">
-        <div class="container">
-            <h1 class="animate-fade-in">
-                <i class="fas fa-qrcode me-3"></i>Scan QR Code
-            </h1>
-            <p class="animate-fade-in-delay">Scan QR Code tamu untuk verifikasi kehadiran</p>
+    <!-- Hero Section -->
+    <header class="hero-section" style="min-height: 30vh; padding: 100px 0 40px;">
+        <div class="container text-center">
+            <div class="hero-content">
+                <h1 class="display-5 fw-bold mb-2 animate-fade-in">
+                    <i class="fas fa-qrcode me-3"></i>Scan QR Code
+                </h1>
+                <p class="lead mb-0 animate-fade-in-delay">
+                    Verifikasi kehadiran tamu dengan scan QR Code
+                </p>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path d="M0,64 C288,120 576,0 864,64 C1152,128 1344,32 1440,64 L1440,120 L0,120 Z"
+                    fill="var(--bg-dark)"></path>
+            </svg>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content" style="padding-top: 2rem;">
         <div class="container">
-            <div class="row justify-content-center">
-                <!-- Scanner Section -->
-                <div class="col-lg-6 mb-4">
-                    <div class="glass-card scanner-card">
-                        <div class="card-header-custom">
-                            <h3 class="mb-0">
-                                <i class="fas fa-camera me-2"></i>Scanner
-                            </h3>
+            <div class="row g-4">
+                <!-- Scanner Column -->
+                <div class="col-lg-6">
+                    <div class="glass-card">
+                        <div class="card-header-custom d-flex justify-content-between align-items-center">
+                            <h3><i class="fas fa-camera me-2"></i>Scanner</h3>
+                            <div id="cameraControls">
+                                <button class="btn btn-success btn-sm" id="startBtn" onclick="startScanner()">
+                                    <i class="fas fa-play me-1"></i>Mulai
+                                </button>
+                                <button class="btn btn-danger btn-sm d-none" id="stopBtn" onclick="stopScanner()">
+                                    <i class="fas fa-stop me-1"></i>Stop
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Camera Selection -->
-                        <div class="mb-3">
-                            <select class="form-select" id="cameraSelect">
-                                <option value="">Pilih Kamera...</option>
-                            </select>
-                        </div>
+                        <div id="qr-reader"></div>
 
-                        <!-- Scanner Container -->
-                        <div id="scanner-container">
-                            <div id="reader"></div>
-                        </div>
-
-                        <!-- Scanner Controls -->
-                        <div class="scanner-controls mt-3">
-                            <button class="btn btn-primary" id="startScanner">
-                                <i class="fas fa-play me-2"></i>Mulai Scan
-                            </button>
-                            <button class="btn btn-danger" id="stopScanner" style="display: none;">
-                                <i class="fas fa-stop me-2"></i>Stop Scan
-                            </button>
+                        <div class="text-center mt-4" id="scanPlaceholder">
+                            <i class="fas fa-qrcode fa-4x mb-3" style="color: var(--text-muted);"></i>
+                            <p class="text-muted">Klik "Mulai" untuk mengaktifkan kamera</p>
                         </div>
 
                         <!-- Manual Input -->
-                        <div class="manual-input mt-4">
-                            <p class="text-muted mb-2">Atau masukkan kode manual:</p>
+                        <div class="mt-4">
+                            <p class="text-muted text-center mb-2">Atau masukkan kode QR secara manual:</p>
                             <div class="input-group">
-                                <input type="text" class="form-control" id="manualCode"
-                                    placeholder="BUKUTAMU-1-xxxxxxxx">
-                                <button class="btn btn-outline-primary" id="verifyManual">
-                                    <i class="fas fa-check"></i>
+                                <input type="text" class="form-control" id="manualCode" placeholder="AWDG-XX-XXXXX">
+                                <button class="btn btn-primary" onclick="verifyManual()">
+                                    <i class="fas fa-search"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Result Section -->
+                <!-- Result Column -->
                 <div class="col-lg-6">
-                    <div class="glass-card result-card" id="resultCard">
+                    <div class="glass-card" id="resultCard">
                         <div class="card-header-custom">
-                            <h3 class="mb-0">
-                                <i class="fas fa-user-check me-2"></i>Hasil Verifikasi
-                            </h3>
+                            <h3><i class="fas fa-clipboard-check me-2"></i>Hasil Verifikasi</h3>
                         </div>
 
-                        <!-- Initial State -->
-                        <div id="initialState" class="text-center py-5">
-                            <i class="fas fa-qrcode fa-4x text-muted mb-3"></i>
-                            <p class="text-muted">Scan QR Code untuk memverifikasi tamu</p>
+                        <!-- Waiting State -->
+                        <div class="text-center py-5" id="waitingState">
+                            <i class="fas fa-search fa-4x mb-3" style="color: var(--text-muted);"></i>
+                            <p class="text-muted">Menunggu scan QR Code...</p>
                         </div>
 
                         <!-- Success State -->
-                        <div id="successState" class="result-state" style="display: none;">
-                            <div class="text-center">
-                                <div class="result-icon success mb-3">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                                <h3 class="text-success mb-3">Tamu Terverifikasi!</h3>
+                        <div class="text-center py-4 scan-result d-none" id="successState">
+                            <div class="verified-badge mb-3">
+                                <i class="fas fa-check-circle"></i>
                             </div>
-                            <div class="guest-details">
-                                <div class="detail-row">
-                                    <span class="detail-label"><i class="fas fa-user"></i>Nama</span>
-                                    <span class="detail-value" id="resultNama"></span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label"><i class="fas fa-envelope"></i>Email</span>
-                                    <span class="detail-value" id="resultEmail"></span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label"><i class="fas fa-phone"></i>Telepon</span>
-                                    <span class="detail-value" id="resultTelepon"></span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label"><i class="fas fa-calendar"></i>Terdaftar</span>
-                                    <span class="detail-value" id="resultTanggal"></span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label"><i class="fas fa-info-circle"></i>Status</span>
-                                    <span class="detail-value" id="resultStatus"></span>
-                                </div>
+                            <h3 class="text-success mb-3">Tamu Terverifikasi!</h3>
+                            <div class="text-start mx-auto" style="max-width: 300px;">
+                                <p><i class="fas fa-user me-2 text-primary"></i><span id="resultNama">-</span></p>
+                                <p><i class="fas fa-envelope me-2 text-primary"></i><span id="resultEmail">-</span></p>
+                                <p><i class="fas fa-phone me-2 text-primary"></i><span id="resultPhone">-</span></p>
+                                <p id="resultTableRow"><i class="fas fa-chair me-2 text-primary"></i>Meja: <span
+                                        id="resultTable">-</span></p>
                             </div>
-                            <div class="d-grid gap-2 mt-4">
-                                <button class="btn btn-success btn-lg" id="checkInBtn">
-                                    <i class="fas fa-sign-in-alt me-2"></i>Check-In Tamu
-                                </button>
-                                <button class="btn btn-outline-primary" id="scanAgainBtn">
-                                    <i class="fas fa-redo me-2"></i>Scan Lagi
-                                </button>
-                            </div>
+                            <button class="btn btn-success mt-3" onclick="checkInGuest()" id="checkInBtn">
+                                <i class="fas fa-user-check me-2"></i>Check-in Sekarang
+                            </button>
                         </div>
 
-                        <!-- Already Checked In State -->
-                        <div id="checkedInState" class="result-state" style="display: none;">
-                            <div class="text-center">
-                                <div class="result-icon info mb-3">
-                                    <i class="fas fa-user-check"></i>
-                                </div>
-                                <h3 class="text-info mb-3">Tamu Sudah Check-In</h3>
+                        <!-- Already Checked State -->
+                        <div class="text-center py-4 scan-result d-none" id="alreadyCheckedState">
+                            <div class="already-checked mb-3">
+                                <i class="fas fa-exclamation-circle"></i>
                             </div>
-                            <div class="guest-details">
-                                <div class="detail-row">
-                                    <span class="detail-label"><i class="fas fa-user"></i>Nama</span>
-                                    <span class="detail-value" id="checkedNama"></span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label"><i class="fas fa-clock"></i>Check-In</span>
-                                    <span class="detail-value" id="checkedTime"></span>
-                                </div>
-                            </div>
-                            <div class="d-grid mt-4">
-                                <button class="btn btn-outline-primary" id="scanAgainBtn2">
-                                    <i class="fas fa-redo me-2"></i>Scan Lagi
-                                </button>
+                            <h3 class="text-warning mb-3">Sudah Check-in!</h3>
+                            <p class="text-muted">Tamu ini sudah melakukan check-in sebelumnya.</p>
+                            <div class="text-start mx-auto" style="max-width: 300px;">
+                                <p><i class="fas fa-user me-2"></i><span id="alreadyNama">-</span></p>
+                                <p><i class="fas fa-clock me-2"></i>Check-in: <span id="alreadyTime">-</span></p>
                             </div>
                         </div>
 
                         <!-- Error State -->
-                        <div id="errorState" class="result-state" style="display: none;">
-                            <div class="text-center">
-                                <div class="result-icon error mb-3">
-                                    <i class="fas fa-times-circle"></i>
-                                </div>
-                                <h3 class="text-danger mb-3">QR Code Tidak Valid</h3>
-                                <p class="text-muted" id="errorMessage">QR Code tidak terdaftar dalam sistem</p>
+                        <div class="text-center py-4 scan-result d-none" id="errorState">
+                            <div class="invalid-badge mb-3">
+                                <i class="fas fa-times-circle"></i>
                             </div>
-                            <div class="d-grid mt-4">
-                                <button class="btn btn-outline-primary" id="scanAgainBtn3">
-                                    <i class="fas fa-redo me-2"></i>Scan Lagi
-                                </button>
-                            </div>
+                            <h3 class="text-danger mb-3">QR Tidak Valid!</h3>
+                            <p class="text-muted" id="errorMessage">QR Code tidak terdaftar dalam sistem.</p>
+                        </div>
+                    </div>
+
+                    <!-- Recent Check-ins -->
+                    <div class="glass-card mt-4">
+                        <div class="card-header-custom">
+                            <h3><i class="fas fa-history me-2"></i>Check-in Terakhir</h3>
+                        </div>
+                        <div id="recentCheckins">
+                            <p class="text-muted text-center">Belum ada check-in hari ini</p>
                         </div>
                     </div>
                 </div>
@@ -207,32 +236,317 @@
         </div>
     </main>
 
-    <!-- Toast Container -->
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="liveToast" class="toast" role="alert">
-            <div class="toast-header">
-                <i class="fas fa-bell me-2" id="toastIcon"></i>
-                <strong class="me-auto" id="toastTitle">Notifikasi</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
-            </div>
-            <div class="toast-body" id="toastMessage"></div>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer class="footer">
         <div class="container text-center">
-            <p class="mb-0"><i class="fas fa-code me-2"></i>Buku Tamu Digital &copy; 2024</p>
+            <p class="mb-0"><i class="fas fa-code me-2"></i>AW Digital Guestbook &copy; 2024</p>
         </div>
     </footer>
 
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3"></div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- HTML5 QR Code Scanner -->
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <!-- Custom JS -->
-    <script src="js/shared.js"></script>
-    <script src="js/scan.js"></script>
+
+    <script>
+        const API_BASE = 'api';
+        let currentEventId = null;
+        let html5QrcodeScanner = null;
+        let currentGuest = null;
+        let recentCheckins = [];
+
+        // Check auth
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/auth.php?action=check`);
+                const data = await response.json();
+                if (!data.authenticated) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                loadEvents();
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Load events
+        async function loadEvents() {
+            try {
+                const response = await fetch(`${API_BASE}/events.php`);
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    renderEventsList(data.data);
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const eventParam = urlParams.get('event');
+
+                    if (eventParam) {
+                        currentEventId = parseInt(eventParam);
+                        const event = data.data.find(e => e.id === currentEventId);
+                        if (event) document.getElementById('currentEventName').textContent = event.name;
+                    } else {
+                        currentEventId = data.data[0].id;
+                        document.getElementById('currentEventName').textContent = data.data[0].name;
+                    }
+                } else {
+                    showToast('Buat event terlebih dahulu', 'warning');
+                    setTimeout(() => window.location.href = 'events.html', 2000);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Render events list
+        function renderEventsList(events) {
+            const list = document.getElementById('eventsList');
+            let html = '';
+            events.forEach(event => {
+                html += `<li><a class="dropdown-item" href="?event=${event.id}" style="color: var(--text-primary);">
+                    <i class="fas fa-calendar-alt me-2"></i>${escapeHtml(event.name)}</a></li>`;
+            });
+            html += '<li><hr class="dropdown-divider"></li>';
+            html += '<li><a class="dropdown-item" href="events.html" style="color: var(--accent-color);"><i class="fas fa-plus me-2"></i>Kelola Events</a></li>';
+            list.innerHTML = html;
+        }
+
+        // Start scanner
+        function startScanner() {
+            document.getElementById('scanPlaceholder').classList.add('d-none');
+            document.getElementById('startBtn').classList.add('d-none');
+            document.getElementById('stopBtn').classList.remove('d-none');
+
+            html5QrcodeScanner = new Html5Qrcode("qr-reader");
+
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                onScanSuccess,
+                onScanFailure
+            ).catch(err => {
+                console.error("Unable to start scanner:", err);
+                showToast('Gagal mengakses kamera', 'danger');
+                stopScanner();
+            });
+        }
+
+        // Stop scanner
+        function stopScanner() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    document.getElementById('qr-reader').innerHTML = '';
+                    document.getElementById('scanPlaceholder').classList.remove('d-none');
+                    document.getElementById('startBtn').classList.remove('d-none');
+                    document.getElementById('stopBtn').classList.add('d-none');
+                }).catch(err => console.error("Error stopping:", err));
+            }
+        }
+
+        // On scan success
+        function onScanSuccess(decodedText) {
+            // Play beep sound
+            playBeep();
+            verifyCode(decodedText);
+        }
+
+        function onScanFailure(error) {
+            // Ignore scan failures
+        }
+
+        // Verify code
+        async function verifyCode(code) {
+            hideAllStates();
+
+            try {
+                const response = await fetch(`${API_BASE}/guests.php?action=verify&code=${encodeURIComponent(code)}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    currentGuest = data.data;
+
+                    if (currentGuest.status === 'checked_in') {
+                        showAlreadyChecked(currentGuest);
+                    } else {
+                        showSuccess(currentGuest);
+                    }
+                } else {
+                    showError(data.message || 'QR Code tidak valid');
+                }
+            } catch (error) {
+                showError('Terjadi kesalahan saat verifikasi');
+            }
+        }
+
+        // Manual verify
+        function verifyManual() {
+            const code = document.getElementById('manualCode').value.trim();
+            if (!code) {
+                showToast('Masukkan kode QR', 'warning');
+                return;
+            }
+            verifyCode(code);
+        }
+
+        // Show states
+        function hideAllStates() {
+            document.getElementById('waitingState').classList.add('d-none');
+            document.getElementById('successState').classList.add('d-none');
+            document.getElementById('alreadyCheckedState').classList.add('d-none');
+            document.getElementById('errorState').classList.add('d-none');
+        }
+
+        function showSuccess(guest) {
+            document.getElementById('resultNama').textContent = guest.nama;
+            document.getElementById('resultEmail').textContent = guest.email;
+            document.getElementById('resultPhone').textContent = guest.telepon;
+
+            if (guest.tableNumber) {
+                document.getElementById('resultTable').textContent = guest.tableNumber;
+                document.getElementById('resultTableRow').style.display = 'block';
+            } else {
+                document.getElementById('resultTableRow').style.display = 'none';
+            }
+
+            document.getElementById('successState').classList.remove('d-none');
+            document.getElementById('checkInBtn').disabled = false;
+        }
+
+        function showAlreadyChecked(guest) {
+            document.getElementById('alreadyNama').textContent = guest.nama;
+
+            const checkinTime = new Date(guest.checkedInAt).toLocaleString('id-ID', {
+                day: 'numeric', month: 'short', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+            document.getElementById('alreadyTime').textContent = checkinTime;
+
+            document.getElementById('alreadyCheckedState').classList.remove('d-none');
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorState').classList.remove('d-none');
+        }
+
+        // Check in guest
+        async function checkInGuest() {
+            if (!currentGuest) return;
+
+            document.getElementById('checkInBtn').disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/guests.php?action=checkin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: currentGuest.id })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast(`${currentGuest.nama} berhasil check-in!`, 'success');
+                    addToRecent(currentGuest);
+
+                    // Show already checked state after check-in
+                    hideAllStates();
+                    currentGuest.status = 'checked_in';
+                    currentGuest.checkedInAt = new Date().toISOString();
+                    showAlreadyChecked(currentGuest);
+                } else {
+                    showToast(data.message || 'Gagal check-in', 'danger');
+                    document.getElementById('checkInBtn').disabled = false;
+                }
+            } catch (error) {
+                showToast('Terjadi kesalahan', 'danger');
+                document.getElementById('checkInBtn').disabled = false;
+            }
+        }
+
+        // Add to recent
+        function addToRecent(guest) {
+            recentCheckins.unshift({
+                nama: guest.nama,
+                time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+            });
+
+            if (recentCheckins.length > 5) recentCheckins.pop();
+
+            renderRecent();
+        }
+
+        function renderRecent() {
+            const container = document.getElementById('recentCheckins');
+
+            if (recentCheckins.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">Belum ada check-in hari ini</p>';
+                return;
+            }
+
+            let html = '<ul class="list-unstyled mb-0">';
+            recentCheckins.forEach(item => {
+                html += `
+                    <li class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: var(--border-color) !important;">
+                        <span><i class="fas fa-user-check text-success me-2"></i>${escapeHtml(item.nama)}</span>
+                        <small class="text-muted">${item.time}</small>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+
+            container.innerHTML = html;
+        }
+
+        // Play beep
+        function playBeep() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = 1000;
+            oscillator.type = 'sine';
+            gainNode.gain.value = 0.3;
+
+            oscillator.start();
+            setTimeout(() => oscillator.stop(), 100);
+        }
+
+        // Helpers
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast show toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <i class="fas fa-${type === 'success' ? 'check-circle text-success' : type === 'danger' ? 'exclamation-circle text-danger' : 'info-circle text-warning'} me-2"></i>
+                    <strong class="me-auto">Notifikasi</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">${message}</div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Manual input enter key
+        document.getElementById('manualCode').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') verifyManual();
+        });
+
+        // Init
+        checkAuth();
+    </script>
 </body>
 
 </html>

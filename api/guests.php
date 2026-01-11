@@ -1,7 +1,7 @@
 <?php
 /**
- * Guest API - CRUD Operations with QR Code Support
- * Buku Tamu Application
+ * AW Digital Guestbook - Guest API
+ * CRUD Operations with QR Code Support (Event-filtered)
  */
 
 require_once 'config.php';
@@ -9,8 +9,11 @@ require_once 'config.php';
 // Set CORS headers
 setCorsHeaders();
 
-// Initialize database on first request
+// Initialize database
 initDatabase();
+
+// Start session
+startSecureSession();
 
 // Get request method and action
 $method = $_SERVER['REQUEST_METHOD'];
@@ -47,18 +50,74 @@ switch ($method) {
 }
 
 /**
- * Get all guests
+ * Get event ID from request or session
+ */
+function getEventId()
+{
+    // First check URL parameter
+    if (isset($_GET['event_id'])) {
+        return (int) $_GET['event_id'];
+    }
+    // Then check session
+    return getCurrentEventId();
+}
+
+/**
+ * Validate event ownership
+ */
+function validateEventAccess($eventId, $conn)
+{
+    if (!$eventId) {
+        return false;
+    }
+
+    $userId = getCurrentUserId();
+    if (!$userId) {
+        return false;
+    }
+
+    $stmt = $conn->prepare("SELECT id FROM events WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $eventId, $userId);
+    $stmt->execute();
+    $result = $stmt->get_result()->num_rows > 0;
+    $stmt->close();
+
+    return $result;
+}
+
+/**
+ * Get all guests (filtered by event)
  */
 function getGuests()
 {
     $conn = getConnection();
 
+    $eventId = getEventId();
     $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 
-    $sql = "SELECT * FROM guests";
+    // Build query
+    if ($eventId && isAuthenticated()) {
+        // If logged in and event specified, validate ownership
+        if (!validateEventAccess($eventId, $conn)) {
+            $conn->close();
+            jsonResponse(['success' => false, 'message' => 'Event tidak ditemukan'], 404);
+        }
+
+        $sql = "SELECT * FROM guests WHERE event_id = $eventId";
+    } else if (isAuthenticated()) {
+        // Get all guests for all user's events
+        $userId = getCurrentUserId();
+        $sql = "SELECT g.* FROM guests g 
+                JOIN events e ON g.event_id = e.id 
+                WHERE e.user_id = $userId";
+    } else {
+        // Public access - no guests (must be logged in)
+        jsonResponse(['success' => true, 'data' => []]);
+        return;
+    }
 
     if (!empty($search)) {
-        $sql .= " WHERE nama LIKE '%$search%' OR email LIKE '%$search%' OR telepon LIKE '%$search%'";
+        $sql .= " AND (g.nama LIKE '%$search%' OR g.email LIKE '%$search%' OR g.telepon LIKE '%$search%')";
     }
 
     $sql .= " ORDER BY created_at DESC";
@@ -66,7 +125,7 @@ function getGuests()
     $result = $conn->query($sql);
 
     $guests = [];
-    if ($result->num_rows > 0) {
+    if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             $guests[] = formatGuest($row);
         }
@@ -87,7 +146,18 @@ function getGuestById()
     $result = $conn->query("SELECT * FROM guests WHERE id = $id");
 
     if ($result->num_rows > 0) {
-        $guest = formatGuest($result->fetch_assoc());
+        $guest = $result->fetch_assoc();
+
+        // Validate access if logged in
+        if (isAuthenticated()) {
+            $eventId = $guest['event_id'];
+            if ($eventId && !validateEventAccess($eventId, $conn)) {
+                $conn->close();
+                jsonResponse(['success' => false, 'message' => 'Akses ditolak'], 403);
+            }
+        }
+
+        $guest = formatGuest($guest);
         $conn->close();
         jsonResponse(['success' => true, 'data' => $guest]);
     } else {
@@ -97,26 +167,42 @@ function getGuestById()
 }
 
 /**
- * Get statistics
+ * Get statistics (filtered by event)
  */
 function getStats()
 {
     $conn = getConnection();
 
+    $eventId = getEventId();
+
+    if ($eventId && isAuthenticated()) {
+        if (!validateEventAccess($eventId, $conn)) {
+            $conn->close();
+            jsonResponse(['success' => false, 'message' => 'Event tidak ditemukan'], 404);
+        }
+        $whereClause = "WHERE event_id = $eventId";
+    } else if (isAuthenticated()) {
+        $userId = getCurrentUserId();
+        $whereClause = "WHERE event_id IN (SELECT id FROM events WHERE user_id = $userId)";
+    } else {
+        jsonResponse(['success' => true, 'data' => ['total' => 0, 'today' => 0, 'checkedIn' => 0, 'pending' => 0]]);
+        return;
+    }
+
     // Total guests
-    $totalResult = $conn->query("SELECT COUNT(*) as total FROM guests");
+    $totalResult = $conn->query("SELECT COUNT(*) as total FROM guests $whereClause");
     $total = $totalResult->fetch_assoc()['total'];
 
     // Today's guests
-    $todayResult = $conn->query("SELECT COUNT(*) as today FROM guests WHERE DATE(tanggal) = CURDATE()");
+    $todayResult = $conn->query("SELECT COUNT(*) as today FROM guests $whereClause AND DATE(tanggal) = CURDATE()");
     $today = $todayResult->fetch_assoc()['today'];
 
     // Checked in guests
-    $checkedInResult = $conn->query("SELECT COUNT(*) as checked_in FROM guests WHERE status = 'checked_in'");
+    $checkedInResult = $conn->query("SELECT COUNT(*) as checked_in FROM guests $whereClause AND status = 'checked_in'");
     $checkedIn = $checkedInResult->fetch_assoc()['checked_in'];
 
     // Pending guests
-    $pendingResult = $conn->query("SELECT COUNT(*) as pending FROM guests WHERE status = 'pending'");
+    $pendingResult = $conn->query("SELECT COUNT(*) as pending FROM guests $whereClause AND status = 'pending'");
     $pending = $pendingResult->fetch_assoc()['pending'];
 
     $conn->close();
@@ -145,10 +231,10 @@ function verifyQRCode()
         return;
     }
 
-    // Parse the QR code format: BUKUTAMU-{id}-{token}
+    // Parse the QR code format: AWDG-{id}-{token} or BUKUTAMU-{id}-{token} (legacy)
     $parts = explode('-', $code);
 
-    if (count($parts) !== 3 || $parts[0] !== 'BUKUTAMU') {
+    if (count($parts) !== 3 || ($parts[0] !== 'AWDG' && $parts[0] !== 'BUKUTAMU')) {
         jsonResponse(['success' => false, 'message' => 'Format QR Code tidak valid'], 400);
         return;
     }
@@ -214,10 +300,27 @@ function checkInGuest()
  */
 function createGuest()
 {
+    requireAuth();
+
     $conn = getConnection();
 
     // Get JSON input
     $input = json_decode(file_get_contents('php://input'), true);
+
+    // Get event ID
+    $eventId = isset($input['event_id']) ? (int) $input['event_id'] : getEventId();
+
+    if (!$eventId) {
+        jsonResponse(['success' => false, 'message' => 'Event harus dipilih terlebih dahulu'], 400);
+        return;
+    }
+
+    // Validate event ownership
+    if (!validateEventAccess($eventId, $conn)) {
+        $conn->close();
+        jsonResponse(['success' => false, 'message' => 'Event tidak ditemukan'], 404);
+        return;
+    }
 
     // Validate input
     $errors = validateGuest($input);
@@ -234,12 +337,15 @@ function createGuest()
     $email = $conn->real_escape_string(trim(strtolower($input['email'])));
     $telepon = $conn->real_escape_string(trim($input['telepon']));
     $pesan = $conn->real_escape_string(trim($input['pesan']));
+    $tableNumber = isset($input['tableNumber']) ? $conn->real_escape_string(trim($input['tableNumber'])) : null;
 
     // Insert guest
-    $sql = "INSERT INTO guests (nama, email, telepon, pesan, qr_token) VALUES ('$nama', '$email', '$telepon', '$pesan', '$qrToken')";
+    $stmt = $conn->prepare("INSERT INTO guests (event_id, nama, email, telepon, pesan, table_number, qr_token) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("issssss", $eventId, $nama, $email, $telepon, $pesan, $tableNumber, $qrToken);
 
-    if ($conn->query($sql)) {
+    if ($stmt->execute()) {
         $id = $conn->insert_id;
+        $stmt->close();
 
         // Fetch the created guest
         $result = $conn->query("SELECT * FROM guests WHERE id = $id");
@@ -252,6 +358,7 @@ function createGuest()
             'data' => $guest
         ], 201);
     } else {
+        $stmt->close();
         $conn->close();
         jsonResponse(['success' => false, 'message' => 'Gagal menambahkan tamu'], 500);
     }
@@ -262,6 +369,8 @@ function createGuest()
  */
 function updateGuest()
 {
+    requireAuth();
+
     $conn = getConnection();
 
     // Get JSON input
@@ -275,11 +384,18 @@ function updateGuest()
 
     $id = (int) $input['id'];
 
-    // Check if guest exists
-    $checkResult = $conn->query("SELECT id FROM guests WHERE id = $id");
+    // Check if guest exists and validate access
+    $checkResult = $conn->query("SELECT event_id FROM guests WHERE id = $id");
     if ($checkResult->num_rows === 0) {
         $conn->close();
         jsonResponse(['success' => false, 'message' => 'Tamu tidak ditemukan'], 404);
+        return;
+    }
+
+    $guestData = $checkResult->fetch_assoc();
+    if ($guestData['event_id'] && !validateEventAccess($guestData['event_id'], $conn)) {
+        $conn->close();
+        jsonResponse(['success' => false, 'message' => 'Akses ditolak'], 403);
         return;
     }
 
@@ -295,11 +411,15 @@ function updateGuest()
     $email = $conn->real_escape_string(trim(strtolower($input['email'])));
     $telepon = $conn->real_escape_string(trim($input['telepon']));
     $pesan = $conn->real_escape_string(trim($input['pesan']));
+    $tableNumber = isset($input['tableNumber']) ? $conn->real_escape_string(trim($input['tableNumber'])) : null;
 
     // Update guest
-    $sql = "UPDATE guests SET nama='$nama', email='$email', telepon='$telepon', pesan='$pesan' WHERE id=$id";
+    $stmt = $conn->prepare("UPDATE guests SET nama=?, email=?, telepon=?, pesan=?, table_number=? WHERE id=?");
+    $stmt->bind_param("sssssi", $nama, $email, $telepon, $pesan, $tableNumber, $id);
 
-    if ($conn->query($sql)) {
+    if ($stmt->execute()) {
+        $stmt->close();
+
         // Fetch the updated guest
         $result = $conn->query("SELECT * FROM guests WHERE id = $id");
         $guest = formatGuest($result->fetch_assoc());
@@ -311,6 +431,7 @@ function updateGuest()
             'data' => $guest
         ]);
     } else {
+        $stmt->close();
         $conn->close();
         jsonResponse(['success' => false, 'message' => 'Gagal memperbarui data tamu'], 500);
     }
@@ -321,6 +442,8 @@ function updateGuest()
  */
 function deleteGuest()
 {
+    requireAuth();
+
     $conn = getConnection();
 
     // Get ID from query string or body
@@ -336,11 +459,18 @@ function deleteGuest()
         return;
     }
 
-    // Check if guest exists
-    $checkResult = $conn->query("SELECT id FROM guests WHERE id = $id");
+    // Check if guest exists and validate access
+    $checkResult = $conn->query("SELECT event_id FROM guests WHERE id = $id");
     if ($checkResult->num_rows === 0) {
         $conn->close();
         jsonResponse(['success' => false, 'message' => 'Tamu tidak ditemukan'], 404);
+        return;
+    }
+
+    $guestData = $checkResult->fetch_assoc();
+    if ($guestData['event_id'] && !validateEventAccess($guestData['event_id'], $conn)) {
+        $conn->close();
+        jsonResponse(['success' => false, 'message' => 'Akses ditolak'], 403);
         return;
     }
 
@@ -364,14 +494,19 @@ function deleteGuest()
  */
 function formatGuest($row)
 {
+    $prefix = defined('QR_PREFIX') ? QR_PREFIX : 'AWDG';
+
     return [
         'id' => (int) $row['id'],
+        'eventId' => isset($row['event_id']) ? (int) $row['event_id'] : null,
         'nama' => $row['nama'],
         'email' => $row['email'],
         'telepon' => $row['telepon'],
         'pesan' => $row['pesan'],
+        'message' => isset($row['message']) ? $row['message'] : null,
+        'tableNumber' => isset($row['table_number']) ? $row['table_number'] : null,
         'qrToken' => $row['qr_token'],
-        'qrCode' => 'BUKUTAMU-' . $row['id'] . '-' . $row['qr_token'],
+        'qrCode' => $prefix . '-' . $row['id'] . '-' . $row['qr_token'],
         'status' => $row['status'] ?? 'pending',
         'checkedInAt' => $row['checked_in_at'],
         'tanggal' => $row['tanggal'],
@@ -419,15 +554,5 @@ function validateGuest($input)
     }
 
     return $errors;
-}
-
-/**
- * Send JSON response
- */
-function jsonResponse($data, $statusCode = 200)
-{
-    http_response_code($statusCode);
-    echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    exit();
 }
 ?>

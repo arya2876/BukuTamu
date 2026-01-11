@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Kelola Daftar Tamu - Buku Tamu Digital">
-    <title>Kelola Tamu | Buku Tamu Digital</title>
+    <meta name="description" content="AW Digital Guestbook - Kelola Data Tamu">
+    <title>Kelola Tamu | AW Digital Guestbook</title>
 
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,6 +14,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <!-- QRCode.js (browser version) -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs2@0.0.2/qrcode.min.js"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -22,8 +24,8 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-navbar">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="index.html">
-                <i class="fas fa-book-open me-2"></i>Buku Tamu
+            <a class="navbar-brand fw-bold" href="dashboard.html">
+                <i class="fas fa-book-open me-2"></i>AW Digital
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -31,112 +33,203 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i>Home</a>
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="input.html"><i class="fas fa-user-plus me-1"></i>Input</a>
+                        <a class="nav-link" href="input.html">
+                            <i class="fas fa-user-plus me-1"></i>Input
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="manage.html"><i class="fas fa-users-cog me-1"></i>Kelola</a>
+                        <a class="nav-link active" href="manage.html">
+                            <i class="fas fa-users-cog me-1"></i>Kelola
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="scan.html"><i class="fas fa-qrcode me-1"></i>Scan</a>
+                        <a class="nav-link" href="scan.html">
+                            <i class="fas fa-qrcode me-1"></i>Scan
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="eventDropdown" role="button"
+                            data-bs-toggle="dropdown">
+                            <i class="fas fa-calendar-alt me-1"></i><span id="currentEventName">Event</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end glass-modal" id="eventsList"></ul>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Page Header -->
-    <header class="page-header">
-        <div class="container">
-            <h1 class="animate-fade-in">
-                <i class="fas fa-users-cog me-3"></i>Kelola Daftar Tamu
-            </h1>
-            <p class="animate-fade-in-delay">Cari, lihat, edit, dan hapus data tamu</p>
+    <!-- Hero Section -->
+    <header class="hero-section" style="min-height: 30vh; padding: 100px 0 40px;">
+        <div class="container text-center">
+            <div class="hero-content">
+                <h1 class="display-5 fw-bold mb-2 animate-fade-in">
+                    <i class="fas fa-users-cog me-3"></i>Kelola Tamu
+                </h1>
+                <p class="lead mb-0 animate-fade-in-delay">
+                    Lihat, edit, dan kelola data tamu event Anda
+                </p>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path d="M0,64 C288,120 576,0 864,64 C1152,128 1344,32 1440,64 L1440,120 L0,120 Z"
+                    fill="var(--bg-dark)"></path>
+            </svg>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content" style="padding-top: 2rem;">
         <div class="container">
-            <!-- Search & Stats Bar -->
-            <div class="glass-card mb-4">
-                <div class="row align-items-center">
-                    <div class="col-md-6 mb-3 mb-md-0">
-                        <div class="search-box-large">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" placeholder="Cari nama, email, atau telepon...">
-                        </div>
+            <!-- Stats Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-6">
+                    <div class="glass-card text-center py-3">
+                        <h4 class="mb-0" id="statTotal">0</h4>
+                        <small class="text-muted">Total Tamu</small>
                     </div>
-                    <div class="col-md-6">
-                        <div class="d-flex justify-content-md-end gap-3 flex-wrap">
-                            <div class="stat-badge">
-                                <i class="fas fa-users"></i>
-                                <span id="totalCount">0</span> Total
-                            </div>
-                            <div class="stat-badge success">
-                                <i class="fas fa-check-circle"></i>
-                                <span id="checkedInCount">0</span> Hadir
-                            </div>
-                            <div class="stat-badge warning">
-                                <i class="fas fa-clock"></i>
-                                <span id="pendingCount">0</span> Pending
-                            </div>
-                        </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="glass-card text-center py-3">
+                        <h4 class="mb-0 text-success" id="statCheckedIn">0</h4>
+                        <small class="text-muted">Hadir</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="glass-card text-center py-3">
+                        <h4 class="mb-0 text-warning" id="statPending">0</h4>
+                        <small class="text-muted">Belum Hadir</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="glass-card text-center py-3">
+                        <h4 class="mb-0 text-info" id="statToday">0</h4>
+                        <small class="text-muted">Hari Ini</small>
                     </div>
                 </div>
             </div>
 
-            <!-- Guest Table -->
+            <!-- Table Card -->
             <div class="glass-card table-card">
+                <div class="card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <h3 class="mb-0"><i class="fas fa-list me-2"></i>Daftar Tamu</h3>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Cari tamu...">
+                        </div>
+                        <a href="input.html" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-1"></i>Tambah
+                        </a>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="exportCSV()">
+                            <i class="fas fa-download me-1"></i>Export
+                        </button>
+                    </div>
+                </div>
+
                 <div class="table-responsive">
-                    <table class="table table-hover" id="guestTable">
+                    <table class="table" id="guestsTable">
                         <thead>
                             <tr>
-                                <th>No</th>
+                                <th>#</th>
                                 <th>Nama</th>
                                 <th>Email</th>
                                 <th>Telepon</th>
+                                <th>Meja</th>
                                 <th>Status</th>
                                 <th>Tanggal</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="guestTableBody">
-                            <!-- Data will be populated by JavaScript -->
+                        <tbody id="guestsTableBody">
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <i class="fas fa-spinner fa-spin me-2"></i>Memuat data...
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
+
                 <div class="empty-state" id="emptyState">
-                    <i class="fas fa-inbox"></i>
-                    <p>Belum ada data tamu</p>
-                    <a href="input.html" class="btn btn-primary mt-3">
-                        <i class="fas fa-plus me-2"></i>Tambah Tamu Baru
-                    </a>
+                    <i class="fas fa-users"></i>
+                    <p>Belum ada tamu</p>
+                    <small>Tambahkan tamu pertama untuk event ini</small>
+                    <div class="mt-3">
+                        <a href="input.html" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Tambah Tamu
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- QR Code Modal -->
-    <div class="modal fade" id="qrModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+    <!-- Detail Modal -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content glass-modal">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-qrcode me-2"></i>QR Code Tamu</h5>
+                    <h5 class="modal-title"><i class="fas fa-user me-2"></i>Detail Tamu</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-center">
-                    <h4 id="modalGuestName" class="mb-3"></h4>
-                    <div id="modalQRCode" class="qr-container mb-3"></div>
-                    <p class="qr-code-text" id="modalQRText"></p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-success" id="modalDownloadQR">
-                        <i class="fas fa-download me-2"></i>Download
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <i class="fas fa-user"></i>
+                                <div class="detail-content">
+                                    <span class="detail-label">Nama</span>
+                                    <span class="detail-value" id="detailNama">-</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-envelope"></i>
+                                <div class="detail-content">
+                                    <span class="detail-label">Email</span>
+                                    <span class="detail-value" id="detailEmail">-</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-phone"></i>
+                                <div class="detail-content">
+                                    <span class="detail-label">Telepon</span>
+                                    <span class="detail-value" id="detailTelepon">-</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chair"></i>
+                                <div class="detail-content">
+                                    <span class="detail-label">Meja</span>
+                                    <span class="detail-value" id="detailMeja">-</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-comment"></i>
+                                <div class="detail-content">
+                                    <span class="detail-label">Pesan</span>
+                                    <span class="detail-value" id="detailPesan">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <div class="qr-display mb-3"
+                                style="background: white; padding: 1.5rem; border-radius: 16px; display: inline-block;">
+                                <div id="detailQrCanvas"></div>
+                            </div>
+
+                            <p><code id="detailQrCode">-</code></p>
+                            <button class="btn btn-primary btn-sm" onclick="downloadDetailQR()">
+                                <i class="fas fa-download me-2"></i>Download QR
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -144,37 +237,41 @@
 
     <!-- Edit Modal -->
     <div class="modal fade" id="editModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog">
             <div class="modal-content glass-modal">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Data Tamu</h5>
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Tamu</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editForm">
                         <input type="hidden" id="editId">
-                        <div class="form-floating mb-3">
+                        <div class="mb-3">
+                            <label class="form-label">Nama</label>
                             <input type="text" class="form-control" id="editNama" required>
-                            <label for="editNama">Nama Lengkap</label>
                         </div>
-                        <div class="form-floating mb-3">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
                             <input type="email" class="form-control" id="editEmail" required>
-                            <label for="editEmail">Email</label>
                         </div>
-                        <div class="form-floating mb-3">
+                        <div class="mb-3">
+                            <label class="form-label">Telepon</label>
                             <input type="tel" class="form-control" id="editTelepon" required>
-                            <label for="editTelepon">Telepon</label>
                         </div>
-                        <div class="form-floating">
-                            <textarea class="form-control" id="editPesan" style="height: 100px" required></textarea>
-                            <label for="editPesan">Pesan</label>
+                        <div class="mb-3">
+                            <label class="form-label">Meja</label>
+                            <input type="text" class="form-control" id="editMeja">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pesan</label>
+                            <textarea class="form-control" id="editPesan" rows="3" required></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" form="editForm" class="btn btn-warning">
-                        <i class="fas fa-save me-2"></i>Simpan Perubahan
+                    <button type="button" class="btn btn-primary" onclick="saveEdit()">
+                        <i class="fas fa-save me-2"></i>Simpan
                     </button>
                 </div>
             </div>
@@ -183,22 +280,18 @@
 
     <!-- Delete Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog">
             <div class="modal-content glass-modal">
-                <div class="modal-header border-danger">
-                    <h5 class="modal-title text-danger">
-                        <i class="fas fa-exclamation-triangle me-2"></i>Konfirmasi Hapus
-                    </h5>
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger"><i class="fas fa-trash me-2"></i>Hapus Tamu</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-center py-4">
-                    <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
-                    <p class="mb-0">Apakah Anda yakin ingin menghapus <strong id="deleteGuestName"></strong>?</p>
-                    <p class="text-muted small">Tindakan ini tidak dapat dibatalkan</p>
+                <div class="modal-body">
+                    <p>Apakah Anda yakin ingin menghapus data tamu <strong id="deleteName"></strong>?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-danger" id="confirmDelete">
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
                         <i class="fas fa-trash me-2"></i>Hapus
                     </button>
                 </div>
@@ -206,32 +299,352 @@
         </div>
     </div>
 
-    <!-- Toast Container -->
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="liveToast" class="toast" role="alert">
-            <div class="toast-header">
-                <i class="fas fa-bell me-2" id="toastIcon"></i>
-                <strong class="me-auto" id="toastTitle">Notifikasi</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
-            </div>
-            <div class="toast-body" id="toastMessage"></div>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer class="footer">
         <div class="container text-center">
-            <p class="mb-0"><i class="fas fa-code me-2"></i>Buku Tamu Digital &copy; 2024</p>
+            <p class="mb-0"><i class="fas fa-code me-2"></i>AW Digital Guestbook &copy; 2024</p>
         </div>
     </footer>
 
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3"></div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- QRCode.js (Browser-ready) -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <!-- Custom JS -->
-    <script src="js/shared.js"></script>
-    <script src="js/manage.js"></script>
+
+    <script>
+        const API_BASE = 'api';
+        let currentEventId = null;
+        let guests = [];
+        let deleteGuestId = null;
+        let currentDetailGuest = null;
+
+        // Check auth
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/auth.php?action=check`);
+                const data = await response.json();
+                if (!data.authenticated) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                loadEvents();
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Load events
+        async function loadEvents() {
+            try {
+                const response = await fetch(`${API_BASE}/events.php`);
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    renderEventsList(data.data);
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const eventParam = urlParams.get('event');
+
+                    if (eventParam) {
+                        currentEventId = parseInt(eventParam);
+                        const event = data.data.find(e => e.id === currentEventId);
+                        if (event) {
+                            document.getElementById('currentEventName').textContent = event.name;
+                        }
+                    } else {
+                        currentEventId = data.data[0].id;
+                        document.getElementById('currentEventName').textContent = data.data[0].name;
+                    }
+
+                    loadGuests();
+                    loadStats();
+                } else {
+                    showToast('Buat event terlebih dahulu', 'warning');
+                    setTimeout(() => window.location.href = 'events.html', 2000);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Render events list
+        function renderEventsList(events) {
+            const list = document.getElementById('eventsList');
+            let html = '';
+            events.forEach(event => {
+                html += `<li><a class="dropdown-item" href="?event=${event.id}" style="color: var(--text-primary);">
+                    <i class="fas fa-calendar-alt me-2"></i>${escapeHtml(event.name)}</a></li>`;
+            });
+            html += '<li><hr class="dropdown-divider"></li>';
+            html += '<li><a class="dropdown-item" href="events.html" style="color: var(--accent-color);"><i class="fas fa-plus me-2"></i>Kelola Events</a></li>';
+            list.innerHTML = html;
+        }
+
+        // Load guests
+        async function loadGuests() {
+            try {
+                const response = await fetch(`${API_BASE}/guests.php?event_id=${currentEventId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    guests = data.data;
+                    renderTable(guests);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Load stats
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/guests.php?action=stats&event_id=${currentEventId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('statTotal').textContent = data.data.total;
+                    document.getElementById('statCheckedIn').textContent = data.data.checkedIn;
+                    document.getElementById('statPending').textContent = data.data.pending;
+                    document.getElementById('statToday').textContent = data.data.today;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Render table
+        function renderTable(data) {
+            const tbody = document.getElementById('guestsTableBody');
+            const emptyState = document.getElementById('emptyState');
+
+            if (data.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.add('show');
+                return;
+            }
+
+            emptyState.classList.remove('show');
+
+            let html = '';
+            data.forEach((guest, index) => {
+                const statusBadge = guest.status === 'checked_in'
+                    ? '<span class="badge bg-success">Hadir</span>'
+                    : '<span class="badge bg-warning text-dark">Pending</span>';
+
+                const date = new Date(guest.tanggal).toLocaleDateString('id-ID', {
+                    day: 'numeric', month: 'short', year: 'numeric'
+                });
+
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${escapeHtml(guest.nama)}</td>
+                        <td>${escapeHtml(guest.email)}</td>
+                        <td>${escapeHtml(guest.telepon)}</td>
+                        <td>${guest.tableNumber || '-'}</td>
+                        <td>${statusBadge}</td>
+                        <td>${date}</td>
+                        <td>
+                            <button class="btn btn-action btn-info" onclick="showDetail(${guest.id})" title="Detail">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-action btn-warning" onclick="openEdit(${guest.id})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-action btn-danger" onclick="openDelete(${guest.id}, '${escapeHtml(guest.nama)}')" title="Hapus">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const search = e.target.value.toLowerCase();
+            const filtered = guests.filter(g =>
+                g.nama.toLowerCase().includes(search) ||
+                g.email.toLowerCase().includes(search) ||
+                g.telepon.includes(search)
+            );
+            renderTable(filtered);
+        });
+
+        // Show detail
+        function showDetail(id) {
+            const guest = guests.find(g => g.id === id);
+            if (!guest) return;
+
+            currentDetailGuest = guest;
+
+            document.getElementById('detailNama').textContent = guest.nama;
+            document.getElementById('detailEmail').textContent = guest.email;
+            document.getElementById('detailTelepon').textContent = guest.telepon;
+            document.getElementById('detailMeja').textContent = guest.tableNumber || '-';
+            document.getElementById('detailPesan').textContent = guest.pesan;
+            document.getElementById('detailQrCode').textContent = guest.qrCode;
+
+            // Clear and regenerate QR code
+            const qrContainer = document.getElementById('detailQrCanvas').parentElement;
+            qrContainer.innerHTML = '<div id="detailQrCanvas"></div>';
+            new QRCode(document.getElementById('detailQrCanvas'), {
+                text: guest.qrCode,
+                width: 200,
+                height: 200,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            new bootstrap.Modal(document.getElementById('detailModal')).show();
+        }
+
+        // Download detail QR
+        function downloadDetailQR() {
+            if (!currentDetailGuest) return;
+            const qrContainer = document.getElementById('detailQrCanvas');
+            const canvas = qrContainer.querySelector('canvas');
+            if (!canvas) {
+                alert('QR Code belum tersedia');
+                return;
+            }
+            const link = document.createElement('a');
+            link.download = `QR_${currentDetailGuest.nama.replace(/\s+/g, '_')}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+
+        // Open edit
+        function openEdit(id) {
+            const guest = guests.find(g => g.id === id);
+            if (!guest) return;
+
+            document.getElementById('editId').value = guest.id;
+            document.getElementById('editNama').value = guest.nama;
+            document.getElementById('editEmail').value = guest.email;
+            document.getElementById('editTelepon').value = guest.telepon;
+            document.getElementById('editMeja').value = guest.tableNumber || '';
+            document.getElementById('editPesan').value = guest.pesan;
+
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+        }
+
+        // Save edit
+        async function saveEdit() {
+            const data = {
+                id: parseInt(document.getElementById('editId').value),
+                nama: document.getElementById('editNama').value,
+                email: document.getElementById('editEmail').value,
+                telepon: document.getElementById('editTelepon').value,
+                tableNumber: document.getElementById('editMeja').value || null,
+                pesan: document.getElementById('editPesan').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/guests.php`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                    showToast('Data tamu berhasil diperbarui', 'success');
+                    loadGuests();
+                } else {
+                    showToast(result.message || 'Gagal menyimpan', 'danger');
+                }
+            } catch (error) {
+                showToast('Terjadi kesalahan', 'danger');
+            }
+        }
+
+        // Open delete
+        function openDelete(id, name) {
+            deleteGuestId = id;
+            document.getElementById('deleteName').textContent = name;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        // Confirm delete
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            if (!deleteGuestId) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/guests.php?id=${deleteGuestId}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+                    showToast('Data tamu berhasil dihapus', 'success');
+                    loadGuests();
+                    loadStats();
+                } else {
+                    showToast(result.message || 'Gagal menghapus', 'danger');
+                }
+            } catch (error) {
+                showToast('Terjadi kesalahan', 'danger');
+            }
+
+            deleteGuestId = null;
+        });
+
+        // Export CSV
+        function exportCSV() {
+            if (guests.length === 0) {
+                showToast('Tidak ada data untuk di-export', 'warning');
+                return;
+            }
+
+            let csv = 'No,Nama,Email,Telepon,Meja,Status,Pesan,Tanggal\n';
+            guests.forEach((g, i) => {
+                csv += `${i + 1},"${g.nama}","${g.email}","${g.telepon}","${g.tableNumber || '-'}","${g.status}","${g.pesan.replace(/"/g, '""')}","${g.tanggal}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `guests_export_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        // Helpers
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast show toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <i class="fas fa-${type === 'success' ? 'check-circle text-success' : type === 'danger' ? 'exclamation-circle text-danger' : 'info-circle text-warning'} me-2"></i>
+                    <strong class="me-auto">Notifikasi</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">${message}</div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Init
+        checkAuth();
+    </script>
 </body>
 
 </html>

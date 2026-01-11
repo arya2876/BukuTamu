@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Buku Tamu Digital - Sistem pengelolaan tamu modern dengan QR Code">
-    <title>Buku Tamu Digital | Home</title>
+    <meta name="description" content="AW Digital Guestbook - Sistem pengelolaan tamu modern dengan QR Code">
+    <title>AW Digital Guestbook | Home</title>
 
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -23,7 +23,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-navbar">
         <div class="container">
             <a class="navbar-brand fw-bold" href="index.html">
-                <i class="fas fa-book-open me-2"></i>Buku Tamu
+                <i class="fas fa-book-open me-2"></i>AW Digital
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -35,19 +35,14 @@
                             <i class="fas fa-home me-1"></i>Home
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="input.html">
-                            <i class="fas fa-user-plus me-1"></i>Input
+                    <li class="nav-item" id="navDashboard" style="display: none;">
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="manage.html">
-                            <i class="fas fa-users-cog me-1"></i>Kelola
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="scan.html">
-                            <i class="fas fa-qrcode me-1"></i>Scan
+                    <li class="nav-item" id="navLogin">
+                        <a class="nav-link" href="login.html">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
                         </a>
                     </li>
                 </ul>
@@ -60,24 +55,19 @@
         <div class="container text-center">
             <div class="hero-content">
                 <h1 class="display-3 fw-bold mb-3 animate-fade-in">
-                    <i class="fas fa-book-reader me-3"></i>Buku Tamu Digital
+                    <i class="fas fa-book-reader me-3"></i>AW Digital Guestbook
                 </h1>
                 <p class="lead mb-4 animate-fade-in-delay">
                     Sistem pengelolaan tamu modern dengan teknologi QR Code
                 </p>
-                <div class="stats-container animate-fade-in-delay-2">
-                    <div class="stat-item">
-                        <span class="stat-number" id="totalGuests">0</span>
-                        <span class="stat-label">Total Tamu</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="checkedInGuests">0</span>
-                        <span class="stat-label">Sudah Hadir</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="pendingGuests">0</span>
-                        <span class="stat-label">Belum Hadir</span>
-                    </div>
+                <div class="animate-fade-in-delay-2">
+                    <a href="login.html" class="btn btn-lg btn-light me-3" id="heroLoginBtn">
+                        <i class="fas fa-sign-in-alt me-2"></i>Mulai Sekarang
+                    </a>
+                    <a href="dashboard.html" class="btn btn-lg btn-outline-light" id="heroDashboardBtn"
+                        style="display: none;">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
                 </div>
             </div>
         </div>
@@ -89,56 +79,42 @@
         </div>
     </header>
 
-    <!-- Menu Cards Section -->
+    <!-- Features Section -->
     <main class="main-content">
         <div class="container">
-            <div class="row g-4 justify-content-center">
+            <!-- Feature Cards -->
+            <div class="row g-4 justify-content-center mb-5">
                 <!-- Input Card -->
                 <div class="col-lg-4 col-md-6">
-                    <a href="input.html" class="text-decoration-none">
-                        <div class="glass-card menu-card text-center">
-                            <div class="menu-icon bg-gradient-primary">
-                                <i class="fas fa-user-plus"></i>
-                            </div>
-                            <h3>Input Tamu</h3>
-                            <p class="text-muted">Tambahkan tamu baru dan dapatkan QR Code unik</p>
-                            <span class="btn btn-outline-primary mt-3">
-                                <i class="fas fa-arrow-right me-2"></i>Mulai Input
-                            </span>
+                    <div class="glass-card menu-card text-center">
+                        <div class="menu-icon bg-gradient-primary">
+                            <i class="fas fa-user-plus"></i>
                         </div>
-                    </a>
+                        <h3>Input Tamu</h3>
+                        <p class="text-muted">Tambahkan tamu baru dan dapatkan QR Code unik</p>
+                    </div>
                 </div>
 
                 <!-- Manage Card -->
                 <div class="col-lg-4 col-md-6">
-                    <a href="manage.html" class="text-decoration-none">
-                        <div class="glass-card menu-card text-center">
-                            <div class="menu-icon bg-gradient-success">
-                                <i class="fas fa-users-cog"></i>
-                            </div>
-                            <h3>Kelola Tamu</h3>
-                            <p class="text-muted">Lihat, cari, edit, dan hapus data tamu</p>
-                            <span class="btn btn-outline-success mt-3">
-                                <i class="fas fa-arrow-right me-2"></i>Kelola Tamu
-                            </span>
+                    <div class="glass-card menu-card text-center">
+                        <div class="menu-icon bg-gradient-success">
+                            <i class="fas fa-users-cog"></i>
                         </div>
-                    </a>
+                        <h3>Kelola Tamu</h3>
+                        <p class="text-muted">Lihat, cari, edit, dan hapus data tamu</p>
+                    </div>
                 </div>
 
                 <!-- Scan Card -->
                 <div class="col-lg-4 col-md-6">
-                    <a href="scan.html" class="text-decoration-none">
-                        <div class="glass-card menu-card text-center">
-                            <div class="menu-icon bg-gradient-info">
-                                <i class="fas fa-qrcode"></i>
-                            </div>
-                            <h3>Scan QR Code</h3>
-                            <p class="text-muted">Scan QR Code tamu untuk verifikasi kehadiran</p>
-                            <span class="btn btn-outline-info mt-3">
-                                <i class="fas fa-arrow-right me-2"></i>Mulai Scan
-                            </span>
+                    <div class="glass-card menu-card text-center">
+                        <div class="menu-icon bg-gradient-info">
+                            <i class="fas fa-qrcode"></i>
                         </div>
-                    </a>
+                        <h3>Scan QR Code</h3>
+                        <p class="text-muted">Scan QR Code tamu untuk verifikasi kehadiran</p>
+                    </div>
                 </div>
             </div>
 
@@ -146,7 +122,7 @@
             <div class="row mt-5 pt-5">
                 <div class="col-12 text-center mb-4">
                     <h2 class="fw-bold">Fitur Unggulan</h2>
-                    <p class="text-muted">Kelola tamu dengan mudah dan modern</p>
+                    <p class="text-muted">Kelola acara dengan mudah dan modern</p>
                 </div>
                 <div class="col-md-3 col-6 text-center mb-4">
                     <div class="feature-item">
@@ -164,16 +140,67 @@
                 </div>
                 <div class="col-md-3 col-6 text-center mb-4">
                     <div class="feature-item">
-                        <i class="fas fa-mobile-alt"></i>
-                        <h5>Responsif</h5>
-                        <small class="text-muted">Akses dari perangkat apapun</small>
+                        <i class="fas fa-calendar-alt"></i>
+                        <h5>Multi Event</h5>
+                        <small class="text-muted">Kelola banyak acara sekaligus</small>
                     </div>
                 </div>
                 <div class="col-md-3 col-6 text-center mb-4">
                     <div class="feature-item">
-                        <i class="fas fa-database"></i>
-                        <h5>Tersimpan</h5>
-                        <small class="text-muted">Data aman di database</small>
+                        <i class="fas fa-file-export"></i>
+                        <h5>Export Data</h5>
+                        <small class="text-muted">Download laporan Excel & PDF</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing Section -->
+            <div class="row mt-5 pt-5">
+                <div class="col-12 text-center mb-4">
+                    <h2 class="fw-bold">Paket Layanan</h2>
+                    <p class="text-muted">Pilih paket yang sesuai dengan kebutuhan Anda</p>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="glass-card text-center h-100">
+                        <h4 class="text-muted">Free</h4>
+                        <h2 class="display-4 fw-bold mb-3">Rp 0</h2>
+                        <ul class="list-unstyled mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>1 Event</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>50 Tamu</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>QR Code</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-times me-2"></i>Export Data</li>
+                        </ul>
+                        <a href="register.html" class="btn btn-outline-primary">Daftar Gratis</a>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="glass-card text-center h-100" style="border: 2px solid var(--accent-color);">
+                        <span class="badge bg-primary mb-2">Popular</span>
+                        <h4 class="text-accent">Pro</h4>
+                        <h2 class="display-4 fw-bold mb-3">Rp 199K</h2>
+                        <ul class="list-unstyled mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Unlimited Events</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>500 Tamu/Event</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>QR Code + Logo</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Export Excel & PDF</li>
+                        </ul>
+                        <a href="register.html" class="btn btn-primary">Mulai Pro</a>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="glass-card text-center h-100">
+                        <h4 class="text-muted">Enterprise</h4>
+                        <h2 class="display-4 fw-bold mb-3">Custom</h2>
+                        <ul class="list-unstyled mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Unlimited Everything</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>White Label</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Priority Support</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Custom Integration</li>
+                        </ul>
+                        <a href="mailto:contact@awdigital.com" class="btn btn-outline-secondary">Hubungi Kami</a>
                     </div>
                 </div>
             </div>
@@ -184,7 +211,7 @@
     <footer class="footer">
         <div class="container text-center">
             <p class="mb-0">
-                <i class="fas fa-code me-2"></i>Buku Tamu Digital &copy; 2024
+                <i class="fas fa-code me-2"></i>AW Digital Guestbook &copy; 2024
             </p>
             <small class="text-muted">Built with Bootstrap 5, PHP & MySQL</small>
         </div>
@@ -192,17 +219,28 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script src="js/shared.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const stats = await GuestAPI.getStats();
-            if (stats) {
-                animateNumber(document.getElementById('totalGuests'), stats.total);
-                animateNumber(document.getElementById('checkedInGuests'), stats.checkedIn);
-                animateNumber(document.getElementById('pendingGuests'), stats.pending);
+        const API_BASE = 'api';
+
+        // Check if user is logged in
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/auth.php?action=check`);
+                const data = await response.json();
+
+                if (data.authenticated) {
+                    // Show dashboard links
+                    document.getElementById('navDashboard').style.display = 'block';
+                    document.getElementById('navLogin').style.display = 'none';
+                    document.getElementById('heroLoginBtn').style.display = 'none';
+                    document.getElementById('heroDashboardBtn').style.display = 'inline-block';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
             }
-        });
+        }
+
+        checkAuth();
     </script>
 </body>
 

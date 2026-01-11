@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AW Digital Guestbook - Kelola Events">
+    <title>Events | AW Digital Guestbook</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-navbar">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="dashboard.html">
+                <i class="fas fa-book-open me-2"></i>AW Digital
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="events.html">
+                            <i class="fas fa-calendar-alt me-1"></i>Events
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i><span id="userName">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end glass-modal">
+                            <li><a class="dropdown-item text-danger" href="#" id="logoutBtn"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section" style="min-height: 30vh; padding: 100px 0 40px;">
+        <div class="container text-center">
+            <div class="hero-content">
+                <h1 class="display-5 fw-bold mb-2 animate-fade-in">
+                    <i class="fas fa-calendar-alt me-3"></i>Kelola Events
+                </h1>
+                <p class="lead mb-0 animate-fade-in-delay">
+                    Buat dan kelola acara Anda
+                </p>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path d="M0,64 C288,120 576,0 864,64 C1152,128 1344,32 1440,64 L1440,120 L0,120 Z"
+                    fill="var(--bg-dark)"></path>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content" style="padding-top: 2rem;">
+        <div class="container">
+            <!-- Create Event Button -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">Daftar Events</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal"
+                    onclick="openCreateModal()">
+                    <i class="fas fa-plus me-2"></i>Buat Event Baru
+                </button>
+            </div>
+
+            <!-- Events Grid -->
+            <div class="row g-4" id="eventsGrid">
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-spinner fa-spin fa-2x mb-3" style="color: var(--text-muted);"></i>
+                    <p class="text-muted">Memuat events...</p>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <i class="fas fa-calendar-plus"></i>
+                <p>Belum ada event</p>
+                <small>Buat event pertama Anda untuk memulai</small>
+                <div class="mt-3">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal"
+                        onclick="openCreateModal()">
+                        <i class="fas fa-plus me-2"></i>Buat Event Pertama
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Event Modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content glass-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalTitle">
+                        <i class="fas fa-calendar-plus me-2"></i>Buat Event Baru
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="eventForm">
+                        <input type="hidden" id="eventId">
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Nama Event <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="eventName"
+                                    placeholder="Contoh: Pernikahan Ahmad & Siti" required>
+                                <div class="invalid-feedback"></div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Deskripsi</label>
+                                <textarea class="form-control" id="eventDescription" rows="3"
+                                    placeholder="Deskripsi singkat tentang acara"></textarea>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Tanggal Event</label>
+                                <input type="date" class="form-control" id="eventDate">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Waktu Event</label>
+                                <input type="time" class="form-control" id="eventTime">
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Lokasi</label>
+                                <input type="text" class="form-control" id="eventLocation"
+                                    placeholder="Contoh: Ballroom Hotel Grand, Jakarta">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Warna Primer</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color" id="primaryColor"
+                                        value="#667eea">
+                                    <input type="text" class="form-control" id="primaryColorText" value="#667eea">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Warna Sekunder</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color" id="secondaryColor"
+                                        value="#764ba2">
+                                    <input type="text" class="form-control" id="secondaryColorText" value="#764ba2">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="saveEventBtn" onclick="saveEvent()">
+                        <span class="btn-text"><i class="fas fa-save me-2"></i>Simpan Event</span>
+                        <span class="btn-loader d-none"><i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content glass-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Hapus Event
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Apakah Anda yakin ingin menghapus event <strong id="deleteEventName"></strong>?</p>
+                    <p class="text-warning mb-0">
+                        <i class="fas fa-exclamation-circle me-1"></i>
+                        Semua data tamu di event ini juga akan dihapus!
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                        <i class="fas fa-trash me-2"></i>Hapus Event
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="mb-0">
+                <i class="fas fa-code me-2"></i>AW Digital Guestbook &copy; 2024
+            </p>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const API_BASE = 'api';
+        let events = [];
+        let deleteEventId = null;
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/auth.php?action=check`);
+                const data = await response.json();
+
+                if (!data.authenticated) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                document.getElementById('userName').textContent = data.user.name;
+                loadEvents();
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Load events
+        async function loadEvents() {
+            try {
+                const response = await fetch(`${API_BASE}/events.php?archived=true`);
+                const data = await response.json();
+
+                if (data.success) {
+                    events = data.data;
+                    renderEvents();
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+                showToast('Gagal memuat data events', 'danger');
+            }
+        }
+
+        // Render events grid
+        function renderEvents() {
+            const grid = document.getElementById('eventsGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (events.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.add('show');
+                return;
+            }
+
+            emptyState.classList.remove('show');
+
+            let html = '';
+            events.forEach(event => {
+                const eventDate = event.eventDate ? new Date(event.eventDate).toLocaleDateString('id-ID', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                }) : 'Belum diatur';
+
+                const progress = event.guestCount > 0
+                    ? Math.round((event.checkedInCount / event.guestCount) * 100)
+                    : 0;
+
+                html += `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="glass-card h-100 ${event.isArchived ? 'opacity-75' : ''}" style="position: relative; overflow: hidden;">
+                            ${event.isArchived ? '<div style="position: absolute; top: 10px; right: 10px;"><span class="badge bg-secondary">Archived</span></div>' : ''}
+                            
+                            <div style="height: 8px; background: linear-gradient(135deg, ${event.primaryColor} 0%, ${event.secondaryColor} 100%); margin: -2rem -2rem 1.5rem; border-radius: 16px 16px 0 0;"></div>
+                            
+                            <h5 class="mb-2">${escapeHtml(event.name)}</h5>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted d-block">
+                                    <i class="fas fa-calendar me-2"></i>${eventDate}
+                                </small>
+                                ${event.location ? `<small class="text-muted d-block"><i class="fas fa-map-marker-alt me-2"></i>${escapeHtml(event.location)}</small>` : ''}
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Kehadiran</span>
+                                <span>${event.checkedInCount}/${event.guestCount} tamu</span>
+                            </div>
+                            
+                            <div class="progress mb-3" style="height: 6px; background: var(--border-color);">
+                                <div class="progress-bar" style="width: ${progress}%; background: linear-gradient(135deg, ${event.primaryColor} 0%, ${event.secondaryColor} 100%);"></div>
+                            </div>
+                            
+                            <div class="d-flex gap-2 flex-wrap">
+                                <a href="manage.html?event=${event.id}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-users"></i>
+                                </a>
+                                <a href="scan.html?event=${event.id}" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-qrcode"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-warning" onclick="openEditModal(${event.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="openDeleteModal(${event.id}, '${escapeHtml(event.name)}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        // Open create modal
+        function openCreateModal() {
+            document.getElementById('eventModalTitle').innerHTML = '<i class="fas fa-calendar-plus me-2"></i>Buat Event Baru';
+            document.getElementById('eventForm').reset();
+            document.getElementById('eventId').value = '';
+            document.getElementById('primaryColor').value = '#667eea';
+            document.getElementById('primaryColorText').value = '#667eea';
+            document.getElementById('secondaryColor').value = '#764ba2';
+            document.getElementById('secondaryColorText').value = '#764ba2';
+        }
+
+        // Open edit modal
+        function openEditModal(eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (!event) return;
+
+            document.getElementById('eventModalTitle').innerHTML = '<i class="fas fa-edit me-2"></i>Edit Event';
+            document.getElementById('eventId').value = event.id;
+            document.getElementById('eventName').value = event.name;
+            document.getElementById('eventDescription').value = event.description || '';
+            document.getElementById('eventDate').value = event.eventDate || '';
+            document.getElementById('eventTime').value = event.eventTime || '';
+            document.getElementById('eventLocation').value = event.location || '';
+            document.getElementById('primaryColor').value = event.primaryColor;
+            document.getElementById('primaryColorText').value = event.primaryColor;
+            document.getElementById('secondaryColor').value = event.secondaryColor;
+            document.getElementById('secondaryColorText').value = event.secondaryColor;
+
+            new bootstrap.Modal(document.getElementById('eventModal')).show();
+        }
+
+        // Save event
+        async function saveEvent() {
+            const btn = document.getElementById('saveEventBtn');
+            const nameInput = document.getElementById('eventName');
+
+            // Validate
+            if (!nameInput.value.trim()) {
+                nameInput.classList.add('is-invalid');
+                nameInput.nextElementSibling.textContent = 'Nama event harus diisi';
+                return;
+            }
+            nameInput.classList.remove('is-invalid');
+
+            const eventId = document.getElementById('eventId').value;
+            const isEdit = !!eventId;
+
+            const eventData = {
+                name: nameInput.value.trim(),
+                description: document.getElementById('eventDescription').value.trim(),
+                eventDate: document.getElementById('eventDate').value,
+                eventTime: document.getElementById('eventTime').value,
+                location: document.getElementById('eventLocation').value.trim(),
+                primaryColor: document.getElementById('primaryColor').value,
+                secondaryColor: document.getElementById('secondaryColor').value
+            };
+
+            if (isEdit) {
+                eventData.id = parseInt(eventId);
+            }
+
+            setButtonLoading(btn, true);
+
+            try {
+                const response = await fetch(`${API_BASE}/events.php`, {
+                    method: isEdit ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(eventData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
+                    showToast(data.message, 'success');
+                    loadEvents();
+                } else {
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(field => {
+                            const input = document.getElementById('event' + field.charAt(0).toUpperCase() + field.slice(1));
+                            if (input) {
+                                input.classList.add('is-invalid');
+                                input.nextElementSibling.textContent = data.errors[field];
+                            }
+                        });
+                    } else {
+                        showToast(data.message || 'Gagal menyimpan event', 'danger');
+                    }
+                }
+            } catch (error) {
+                console.error('Error saving event:', error);
+                showToast('Terjadi kesalahan', 'danger');
+            } finally {
+                setButtonLoading(btn, false);
+            }
+        }
+
+        // Open delete modal
+        function openDeleteModal(eventId, eventName) {
+            deleteEventId = eventId;
+            document.getElementById('deleteEventName').textContent = eventName;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        // Confirm delete
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            if (!deleteEventId) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/events.php?id=${deleteEventId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+                    showToast(data.message, 'success');
+                    loadEvents();
+                } else {
+                    showToast(data.message || 'Gagal menghapus event', 'danger');
+                }
+            } catch (error) {
+                console.error('Error deleting event:', error);
+                showToast('Terjadi kesalahan', 'danger');
+            }
+
+            deleteEventId = null;
+        });
+
+        // Color picker sync
+        document.getElementById('primaryColor').addEventListener('input', (e) => {
+            document.getElementById('primaryColorText').value = e.target.value;
+        });
+        document.getElementById('primaryColorText').addEventListener('input', (e) => {
+            document.getElementById('primaryColor').value = e.target.value;
+        });
+        document.getElementById('secondaryColor').addEventListener('input', (e) => {
+            document.getElementById('secondaryColorText').value = e.target.value;
+        });
+        document.getElementById('secondaryColorText').addEventListener('input', (e) => {
+            document.getElementById('secondaryColor').value = e.target.value;
+        });
+
+        // Helper functions
+        function setButtonLoading(btn, loading) {
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoader = btn.querySelector('.btn-loader');
+            btn.disabled = loading;
+            btnText.classList.toggle('d-none', loading);
+            btnLoader.classList.toggle('d-none', !loading);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast show toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <i class="fas fa-${type === 'success' ? 'check-circle text-success' : type === 'danger' ? 'exclamation-circle text-danger' : 'info-circle text-info'} me-2"></i>
+                    <strong class="me-auto">Notifikasi</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">${message}</div>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch(`${API_BASE}/auth.php?action=logout`, { method: 'POST' });
+            window.location.href = 'login.html';
+        });
+
+        // Initialize
+        checkAuth();
+    </script>
+</body>
+
+</html>

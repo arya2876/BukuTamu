@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="AW Digital Guestbook - Solusi Buku Tamu Digital Modern dengan QR Code untuk Event Anda">
+    <meta name="keywords" content="buku tamu digital, guest book, qr code event, check-in system, event management">
+    <title>AW Digital Guestbook - Solusi Buku Tamu Digital Modern</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        /* ========================================
+           CSS Variables & Root Styles
+        ======================================== */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-color: #00d4ff;
+            --accent-gradient: linear-gradient(135deg, #00d4ff 0%, #00ff88 100%);
+            --bg-dark: #0f0f1a;
+            --bg-darker: #0a0a12;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --bg-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --success-color: #00c853;
+            --warning-color: #ffc107;
+            --danger-color: #ff5252;
+            --font-family: 'Poppins', sans-serif;
+            --transition-speed: 0.3s;
+            --border-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 212, 255, 0.08) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* ========================================
+           Navbar
+        ======================================== */
+        .landing-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .landing-navbar.scrolled {
+            background: rgba(15, 15, 26, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px var(--shadow-color);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link {
+            color: var(--text-secondary) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem !important;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary) !important;
+        }
+
+        .btn-cta {
+            background: var(--primary-gradient);
+            color: white !important;
+            padding: 0.6rem 1.5rem !important;
+            border-radius: 50px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        /* ========================================
+           Hero Section
+        ======================================== */
+        .hero-landing {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-landing::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.3;
+        }
+
+        .hero-landing::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: -200px;
+            width: 500px;
+            height: 500px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.2;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title span {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero-primary {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-hero-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-hero-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-hero-secondary:hover {
+            background: var(--bg-glass);
+            border-color: var(--text-secondary);
+            color: white;
+        }
+
+        .hero-image {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-mockup {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 20px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+        }
+
+        .floating-card {
+            position: absolute;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .floating-card.card-1 {
+            top: 10%;
+            right: -20px;
+            animation-delay: 0s;
+        }
+
+        .floating-card.card-2 {
+            bottom: 20%;
+            left: -30px;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        /* ========================================
+           Features Section
+        ======================================== */
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            height: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--primary-gradient);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ========================================
+           How It Works Section
+        ======================================== */
+        .steps-section {
+            background: var(--bg-darker);
+            position: relative;
+        }
+
+        .step-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .step-connector {
+            position: absolute;
+            top: 40px;
+            left: calc(50% + 50px);
+            width: calc(100% - 100px);
+            height: 2px;
+            background: var(--border-color);
+        }
+
+        .step-connector::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid var(--accent-color);
+            border-top: 2px solid var(--accent-color);
+            transform: rotate(45deg);
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .step-text {
+            color: var(--text-secondary);
+        }
+
+        /* ========================================
+           Pricing Section
+        ======================================== */
+        .pricing-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            height: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            background: var(--primary-gradient);
+            transform: scale(1.05);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-gradient);
+            color: #0a0a12;
+            padding: 0.4rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .pricing-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-card.featured .pricing-desc {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .pricing-card.featured .pricing-price span {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+
+        .pricing-features li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .pricing-card.featured .pricing-features li {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li i {
+            color: var(--success-color);
+        }
+
+        .pricing-features li.disabled {
+            color: var(--text-muted);
+        }
+
+        .pricing-features li.disabled i {
+            color: var(--text-muted);
+        }
+
+        .btn-pricing {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-pricing-outline {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-pricing-outline:hover {
+            background: var(--bg-glass);
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+        }
+
+        .btn-pricing-solid {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-pricing-solid:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+            color: #667eea;
+        }
+
+        /* ========================================
+           Testimonials Section
+        ======================================== */
+        .testimonial-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            height: 100%;
+        }
+
+        .testimonial-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .testimonial-name {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .testimonial-role {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .testimonial-stars {
+            color: #ffc107;
+            margin-bottom: 1rem;
+        }
+
+        /* ========================================
+           FAQ Section
+        ======================================== */
+        .faq-section {
+            background: var(--bg-darker);
+        }
+
+        .accordion-item {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color) !important;
+            border-radius: 16px !important;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .accordion-button {
+            background: transparent;
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 1.25rem 1.5rem;
+            box-shadow: none !important;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background: var(--bg-glass);
+            color: var(--accent-color);
+        }
+
+        .accordion-button::after {
+            filter: invert(1);
+        }
+
+        .accordion-body {
+            color: var(--text-secondary);
+            padding: 0 1.5rem 1.25rem;
+        }
+
+        /* ========================================
+           CTA Section
+        ======================================== */
+        .cta-section {
+            background: var(--primary-gradient);
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            animation: bgMove 20s linear infinite;
+        }
+
+        @keyframes bgMove {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(30px, 30px);
+            }
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .cta-text {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .btn-cta-white {
+            background: white;
+            color: #667eea;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .btn-cta-white:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            color: #667eea;
+        }
+
+        /* ========================================
+           Footer
+        ======================================== */
+        .landing-footer {
+            background: var(--bg-darker);
+            padding: 60px 0 30px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .footer-desc {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-title {
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        /* ========================================
+           Responsive
+        ======================================== */
+        @media (max-width: 991.98px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-image {
+                margin-top: 3rem;
+            }
+
+            .floating-card {
+                display: none;
+            }
+
+            .step-connector {
+                display: none;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+
+            .pricing-card.featured:hover {
+                transform: translateY(-10px);
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .cta-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="landing-navbar" id="mainNav">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-book-open me-2"></i>AW Digital
+                </a>
+                <div class="d-none d-lg-flex align-items-center gap-4">
+                    <a href="#features" class="nav-link">Fitur</a>
+                    <a href="#how-it-works" class="nav-link">Cara Kerja</a>
+                    <a href="#pricing" class="nav-link">Harga</a>
+                    <a href="#faq" class="nav-link">FAQ</a>
+                    <a href="login.html" class="btn btn-cta">
+                        <i class="fas fa-sign-in-alt me-1"></i>Masuk
+                    </a>
+                </div>
+                <button class="navbar-toggler d-lg-none" type="button" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars" style="color: var(--text-primary); font-size: 1.5rem;"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu d-none" id="mobileMenu"
+        style="position: fixed; top: 70px; left: 0; right: 0; background: var(--bg-darker); padding: 1rem; z-index: 999; border-bottom: 1px solid var(--border-color);">
+        <a href="#features" class="d-block py-2 text-decoration-none" style="color: var(--text-secondary);">Fitur</a>
+        <a href="#how-it-works" class="d-block py-2 text-decoration-none" style="color: var(--text-secondary);">Cara
+            Kerja</a>
+        <a href="#pricing" class="d-block py-2 text-decoration-none" style="color: var(--text-secondary);">Harga</a>
+        <a href="#faq" class="d-block py-2 text-decoration-none" style="color: var(--text-secondary);">FAQ</a>
+        <a href="login.html" class="btn btn-cta w-100 mt-2">Masuk</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-landing">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <span class="hero-badge">
+                        <i class="fas fa-sparkles me-2"></i>Platform #1 Buku Tamu Digital
+                    </span>
+                    <h1 class="hero-title">
+                        Kelola Tamu Event Anda dengan <span>Mudah & Modern</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Solusi lengkap untuk registrasi tamu, generate QR Code unik, dan sistem check-in otomatis.
+                        Tingkatkan pengalaman event Anda!
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="register.html" class="btn-hero-primary">
+                            <i class="fas fa-rocket"></i>Mulai Gratis
+                        </a>
+                        <a href="#features" class="btn-hero-secondary">
+                            <i class="fas fa-play-circle"></i>Lihat Demo
+                        </a>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="d-flex gap-4 mt-4 pt-3">
+                        <div>
+                            <h3 class="mb-0" style="font-weight: 700;">1000+</h3>
+                            <small style="color: var(--text-secondary);">Event Sukses</small>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" style="font-weight: 700;">50K+</h3>
+                            <small style="color: var(--text-secondary);">Tamu Terdaftar</small>
+                        </div>
+                        <div>
+                            <h3 class="mb-0" style="font-weight: 700;">99%</h3>
+                            <small style="color: var(--text-secondary);">Kepuasan</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="hero-image">
+                        <!-- Dashboard Preview -->
+                        <div
+                            style="background: var(--bg-glass); border: 1px solid var(--border-color); border-radius: 20px; padding: 2rem; backdrop-filter: blur(20px);">
+                            <div
+                                style="background: var(--bg-darker); border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span style="color: var(--text-muted); font-size: 0.9rem;"><i
+                                            class="fas fa-chart-line me-2"></i>Statistik Hari Ini</span>
+                                    <span
+                                        style="background: var(--success-color); color: white; padding: 0.2rem 0.8rem; border-radius: 50px; font-size: 0.75rem;">Live</span>
+                                </div>
+                                <div class="row text-center g-3">
+                                    <div class="col-4">
+                                        <div
+                                            style="font-size: 1.8rem; font-weight: 700; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                            150</div>
+                                        <small style="color: var(--text-muted);">Total Tamu</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <div style="font-size: 1.8rem; font-weight: 700; color: var(--success-color);">
+                                            89</div>
+                                        <small style="color: var(--text-muted);">Check-in</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-color);">61
+                                        </div>
+                                        <small style="color: var(--text-muted);">Pending</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <div
+                                    style="flex: 1; background: var(--bg-darker); border-radius: 12px; padding: 1rem; text-align: center;">
+                                    <i class="fas fa-qrcode"
+                                        style="font-size: 2rem; color: var(--accent-color); margin-bottom: 0.5rem; display: block;"></i>
+                                    <small style="color: var(--text-muted);">Generate QR</small>
+                                </div>
+                                <div
+                                    style="flex: 1; background: var(--bg-darker); border-radius: 12px; padding: 1rem; text-align: center;">
+                                    <i class="fas fa-camera"
+                                        style="font-size: 2rem; color: var(--success-color); margin-bottom: 0.5rem; display: block;"></i>
+                                    <small style="color: var(--text-muted);">Scan QR</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Floating Cards -->
+                        <div class="floating-card card-1">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Tamu Check-in!</span>
+                        </div>
+                        <div class="floating-card card-2">
+                            <i class="fas fa-qrcode me-2" style="color: var(--accent-color);"></i>
+                            <span>QR Generated</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">Fitur Unggulan</span>
+                <h2 class="section-title">Semua yang Anda Butuhkan</h2>
+                <p class="section-subtitle">
+                    Fitur lengkap untuk mengelola tamu event Anda dengan profesional dan efisien
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <h4 class="feature-title">QR Code Unik</h4>
+                        <p class="feature-text">
+                            Setiap tamu mendapatkan QR Code unik yang dapat di-download dan dibagikan melalui WhatsApp.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background: var(--secondary-gradient);">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <h4 class="feature-title">Scanner Terintegrasi</h4>
+                        <p class="feature-text">
+                            Scan QR Code tamu langsung dari browser. Tidak perlu aplikasi tambahan untuk check-in.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background: var(--accent-gradient);">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h4 class="feature-title">Multi Event</h4>
+                        <p class="feature-text">
+                            Kelola banyak event dalam satu dashboard. Pisahkan data tamu untuk setiap acara.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-card">
+                        <div class="feature-icon"
+                            style="background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <h4 class="feature-title">Kelola Tamu</h4>
+                        <p class="feature-text">
+                            CRUD lengkap untuk menambah, edit, hapus, dan mencari data tamu dengan mudah.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="500">
+                    <div class="feature-card">
+                        <div class="feature-icon"
+                            style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h4 class="feature-title">Laporan & Statistik</h4>
+                        <p class="feature-text">
+                            Dashboard real-time dengan statistik kehadiran, grafik, dan export data.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="600">
+                    <div class="feature-card">
+                        <div class="feature-icon"
+                            style="background: linear-gradient(135deg, #4568dc 0%, #b06ab3 100%);">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h4 class="feature-title">Responsive Design</h4>
+                        <p class="feature-text">
+                            Akses dari mana saja. Desktop, tablet, atau smartphone - semua berjalan sempurna.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="section steps-section" id="how-it-works">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">Cara Kerja</span>
+                <h2 class="section-title">3 Langkah Mudah</h2>
+                <p class="section-subtitle">
+                    Mulai gunakan dalam hitungan menit, tanpa perlu keahlian teknis
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-connector d-none d-md-block"></div>
+                        <h4 class="step-title">Daftar & Buat Event</h4>
+                        <p class="step-text">
+                            Daftar gratis dan buat event pertama Anda dalam hitungan detik.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-connector d-none d-md-block"></div>
+                        <h4 class="step-title">Input Tamu</h4>
+                        <p class="step-text">
+                            Tambahkan data tamu dan QR Code unik akan otomatis ter-generate.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h4 class="step-title">Scan & Check-in</h4>
+                        <p class="step-text">
+                            Di hari H, scan QR Code tamu untuk check-in otomatis. Selesai!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="section" id="pricing">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">Harga</span>
+                <h2 class="section-title">Pilih Paket Anda</h2>
+                <p class="section-subtitle">
+                    Harga transparan tanpa biaya tersembunyi. Mulai gratis, upgrade kapan saja.
+                </p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="pricing-card">
+                        <h3 class="pricing-name">Starter</h3>
+                        <p class="pricing-desc">Untuk event kecil dan personal</p>
+                        <div class="pricing-price">
+                            Gratis
+                            <span>/ selamanya</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> 1 Event Aktif</li>
+                            <li><i class="fas fa-check"></i> Maksimal 50 Tamu</li>
+                            <li><i class="fas fa-check"></i> QR Code Generator</li>
+                            <li><i class="fas fa-check"></i> QR Code Scanner</li>
+                            <li><i class="fas fa-check"></i> Dashboard Statistik</li>
+                            <li class="disabled"><i class="fas fa-times"></i> Export Data</li>
+                            <li class="disabled"><i class="fas fa-times"></i> Priority Support</li>
+                        </ul>
+                        <a href="register.html" class="btn btn-pricing btn-pricing-outline">
+                            Mulai Gratis
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="pricing-card featured">
+                        <span class="pricing-badge">Populer</span>
+                        <h3 class="pricing-name">Pro</h3>
+                        <p class="pricing-desc">Untuk event profesional</p>
+                        <div class="pricing-price">
+                            Rp 99K
+                            <span>/ bulan</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> 5 Event Aktif</li>
+                            <li><i class="fas fa-check"></i> 500 Tamu per Event</li>
+                            <li><i class="fas fa-check"></i> Semua Fitur Starter</li>
+                            <li><i class="fas fa-check"></i> Export Excel & PDF</li>
+                            <li><i class="fas fa-check"></i> Custom Branding</li>
+                            <li><i class="fas fa-check"></i> Email Support</li>
+                            <li class="disabled"><i class="fas fa-times"></i> Dedicated Support</li>
+                        </ul>
+                        <a href="register.html" class="btn btn-pricing btn-pricing-solid">
+                            Pilih Pro
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="pricing-card">
+                        <h3 class="pricing-name">Enterprise</h3>
+                        <p class="pricing-desc">Untuk bisnis & EO besar</p>
+                        <div class="pricing-price">
+                            Custom
+                            <span>/ hubungi kami</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> Unlimited Event</li>
+                            <li><i class="fas fa-check"></i> Unlimited Tamu</li>
+                            <li><i class="fas fa-check"></i> Semua Fitur Pro</li>
+                            <li><i class="fas fa-check"></i> API Access</li>
+                            <li><i class="fas fa-check"></i> White Label</li>
+                            <li><i class="fas fa-check"></i> Dedicated Support</li>
+                            <li><i class="fas fa-check"></i> SLA Guarantee</li>
+                        </ul>
+                        <a href="mailto:sales@awdigital.com" class="btn btn-pricing btn-pricing-outline">
+                            Hubungi Sales
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section" style="background: var(--bg-darker);">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">Testimoni</span>
+                <h2 class="section-title">Apa Kata Mereka?</h2>
+                <p class="section-subtitle">
+                    Dipercaya oleh ratusan event organizer di seluruh Indonesia
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">
+                            "Sangat membantu untuk wedding kami. Tamu bisa check-in dengan cepat tanpa antri panjang.
+                            Highly recommended!"
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">AS</div>
+                            <div>
+                                <div class="testimonial-name">Andi Setiawan</div>
+                                <div class="testimonial-role">Wedding Organizer</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">
+                            "Dashboard yang intuitif dan fitur export sangat berguna untuk reporting ke klien. Worth
+                            every penny!"
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">SR</div>
+                            <div>
+                                <div class="testimonial-name">Siti Rahayu</div>
+                                <div class="testimonial-role">Event Planner</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p class="testimonial-text">
+                            "Kami menggunakan untuk seminar dan conference. Proses check-in jadi lebih cepat 3x lipat!"
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">BW</div>
+                            <div>
+                                <div class="testimonial-name">Budi Wijaya</div>
+                                <div class="testimonial-role">Corporate Event Manager</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section faq-section" id="faq">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">FAQ</span>
+                <h2 class="section-title">Pertanyaan Umum</h2>
+                <p class="section-subtitle">
+                    Jawaban untuk pertanyaan yang sering diajukan
+                </p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8" data-aos="fade-up">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#faq1">
+                                    Apakah ada masa trial untuk paket berbayar?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Ya! Anda bisa mencoba paket Pro gratis selama 14 hari tanpa kartu kredit. Setelah
+                                    trial berakhir, Anda bisa memilih untuk upgrade atau tetap di paket Starter gratis.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#faq2">
+                                    Bagaimana cara tamu mendapatkan QR Code?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Setelah Anda menambahkan data tamu, sistem akan otomatis generate QR Code unik. Anda
+                                    bisa download QR Code tersebut dan kirim ke tamu melalui WhatsApp, Email, atau cetak
+                                    langsung.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#faq3">
+                                    Apakah bisa digunakan offline?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Saat ini aplikasi membutuhkan koneksi internet untuk sinkronisasi data. Namun, Anda
+                                    bisa menggunakan mode kiosk yang tetap berfungsi dengan koneksi minimal. Untuk venue
+                                    tanpa internet, hubungi tim kami untuk solusi on-premise.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#faq4">
+                                    Berapa banyak user yang bisa mengakses?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Paket Starter dan Pro mendukung 1 admin user. Untuk paket Enterprise, Anda bisa
+                                    menambahkan unlimited user dengan berbagai role (Admin, Operator). Cocok untuk tim
+                                    besar.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#faq5">
+                                    Bagaimana keamanan data tamu?
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Keamanan data adalah prioritas kami. Semua data dienkripsi dengan standar SSL/TLS.
+                                    Server kami berlokasi di data center tier-3 dengan backup harian. Kami juga mematuhi
+                                    regulasi perlindungan data pribadi.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container text-center">
+            <h2 class="cta-title" data-aos="fade-up">Siap Memulai?</h2>
+            <p class="cta-text" data-aos="fade-up" data-aos-delay="100">
+                Daftar sekarang dan buat event pertama Anda dalam 2 menit. Gratis!
+            </p>
+            <a href="register.html" class="btn-cta-white" data-aos="fade-up" data-aos-delay="200">
+                <i class="fas fa-rocket"></i>Daftar Gratis Sekarang
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <a class="footer-brand" href="#">
+                        <i class="fas fa-book-open me-2"></i>AW Digital
+                    </a>
+                    <p class="footer-desc">
+                        Solusi buku tamu digital modern untuk semua jenis event. Dari wedding hingga corporate event.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg-2">
+                    <h5 class="footer-title">Produk</h5>
+                    <ul class="footer-links">
+                        <li><a href="#features">Fitur</a></li>
+                        <li><a href="#pricing">Harga</a></li>
+                        <li><a href="#">Demo</a></li>
+                        <li><a href="#">API</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-6 col-lg-2">
+                    <h5 class="footer-title">Perusahaan</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Tentang Kami</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Karir</a></li>
+                        <li><a href="#">Kontak</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-6 col-lg-2">
+                    <h5 class="footer-title">Support</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#">Status</a></li>
+                        <li><a href="#">Panduan</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-6 col-lg-2">
+                    <h5 class="footer-title">Legal</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 AW Digital Guestbook. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function () {
+            const navbar = document.getElementById('mainNav');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('d-none');
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile menu if open
+                    document.getElementById('mobileMenu').classList.add('d-none');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AW Digital Guestbook - Kiosk Mode">
+    <title>Kiosk Mode | AW Digital Guestbook</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- HTML5 QRCode -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            overflow: hidden;
+        }
+
+        .kiosk-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+        }
+
+        .kiosk-header {
+            padding: 1.5rem;
+            text-align: center;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+        }
+
+        .kiosk-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .kiosk-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        #qr-reader {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .welcome-screen {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .success-screen {
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .guest-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--secondary-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 4rem;
+            color: white;
+        }
+
+        .exit-btn {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+        }
+
+        .stats-display {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            background: var(--bg-glass);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .fullscreen-btn {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="kiosk-container">
+        <!-- Header -->
+        <header class="kiosk-header">
+            <h1 class="mb-0">
+                <i class="fas fa-book-open me-2"></i>
+                <span id="eventName">AW Digital Guestbook</span>
+            </h1>
+        </header>
+
+        <!-- Main Content -->
+        <main class="kiosk-main">
+            <!-- Welcome Screen -->
+            <div class="kiosk-card welcome-screen" id="welcomeScreen">
+                <i class="fas fa-qrcode fa-5x mb-4" style="color: var(--accent-color);"></i>
+                <h2 class="mb-3">Selamat Datang!</h2>
+                <p class="text-muted mb-4">Scan QR Code undangan Anda untuk check-in</p>
+
+                <div id="qr-reader"></div>
+
+                <p class="text-muted mt-4">
+                    <i class="fas fa-camera me-1"></i>
+                    Arahkan QR Code ke kamera
+                </p>
+            </div>
+
+            <!-- Success Screen -->
+            <div class="kiosk-card success-screen d-none" id="successScreen">
+                <div class="guest-avatar">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <h2 class="text-success mb-2">Selamat Datang!</h2>
+                <h1 class="display-4 fw-bold mb-3" id="guestName">-</h1>
+                <p class="lead text-muted" id="guestTable"></p>
+                <div class="mt-4">
+                    <span class="badge bg-success fs-5 py-2 px-4">
+                        <i class="fas fa-check-circle me-2"></i>Check-in Berhasil
+                    </span>
+                </div>
+            </div>
+
+            <!-- Already Checked Screen -->
+            <div class="kiosk-card success-screen d-none" id="alreadyCheckedScreen">
+                <div class="guest-avatar" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2 class="text-warning mb-2">Sudah Check-in</h2>
+                <h1 class="display-4 fw-bold mb-3" id="alreadyName">-</h1>
+                <p class="text-muted">Anda sudah melakukan check-in sebelumnya</p>
+            </div>
+
+            <!-- Error Screen -->
+            <div class="kiosk-card success-screen d-none" id="errorScreen">
+                <i class="fas fa-times-circle fa-5x mb-4 text-danger"></i>
+                <h2 class="text-danger mb-3">QR Code Tidak Valid</h2>
+                <p class="text-muted">QR Code tidak terdaftar dalam sistem</p>
+            </div>
+        </main>
+
+        <!-- Exit Button -->
+        <button class="btn btn-outline-secondary exit-btn" onclick="exitKiosk()">
+            <i class="fas fa-times me-1"></i>Keluar
+        </button>
+
+        <!-- Stats Display -->
+        <div class="stats-display">
+            <span class="text-success me-3">
+                <i class="fas fa-user-check me-1"></i>
+                <span id="checkedInCount">0</span> Hadir
+            </span>
+            <span class="text-muted">
+                dari <span id="totalCount">0</span> undangan
+            </span>
+        </div>
+
+        <!-- Fullscreen Button -->
+        <button class="btn btn-primary fullscreen-btn" onclick="toggleFullscreen()">
+            <i class="fas fa-expand"></i>
+        </button>
+    </div>
+
+    <!-- Audio elements for sounds -->
+    <audio id="successSound" preload="auto">
+        <source
+            src="data:audio/wav;base64,UklGRhwMAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YfgLAAB4f3h/eH94f3h/eH94f3h/eH94f3h/eH94f3h+"
+            type="audio/wav">
+    </audio>
+
+    <script>
+        const API_BASE = 'api';
+        let currentEventId = null;
+        let html5QrcodeScanner = null;
+        let isProcessing = false;
+
+        // Get event from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        currentEventId = urlParams.get('event');
+
+        if (!currentEventId) {
+            alert('Event tidak dipilih. Silakan akses melalui dashboard.');
+            window.location.href = 'dashboard.html';
+        }
+
+        // Load event details
+        async function loadEventDetails() {
+            try {
+                const response = await fetch(`${API_BASE}/events.php?id=${currentEventId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('eventName').textContent = data.data.name;
+                    updateStats(data.data);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Update stats
+        function updateStats(event) {
+            document.getElementById('checkedInCount').textContent = event.checkedInCount || 0;
+            document.getElementById('totalCount').textContent = event.guestCount || 0;
+        }
+
+        // Start scanner
+        function startScanner() {
+            html5QrcodeScanner = new Html5Qrcode("qr-reader");
+
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 300, height: 300 } },
+                onScanSuccess,
+                () => { }
+            ).catch(err => {
+                console.error("Unable to start scanner:", err);
+                alert('Gagal mengakses kamera. Pastikan browser memiliki izin kamera.');
+            });
+        }
+
+        // On scan success
+        async function onScanSuccess(decodedText) {
+            if (isProcessing) return;
+            isProcessing = true;
+
+            // Play beep
+            playBeep();
+
+            try {
+                // Verify code
+                const verifyResponse = await fetch(`${API_BASE}/guests.php?action=verify&code=${encodeURIComponent(decodedText)}`);
+                const verifyData = await verifyResponse.json();
+
+                if (verifyData.success) {
+                    const guest = verifyData.data;
+
+                    if (guest.status === 'checked_in') {
+                        showAlreadyChecked(guest);
+                    } else {
+                        // Check in
+                        const checkinResponse = await fetch(`${API_BASE}/guests.php?action=checkin`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: guest.id })
+                        });
+
+                        const checkinData = await checkinResponse.json();
+
+                        if (checkinData.success) {
+                            showSuccess(guest);
+                            loadEventDetails(); // Refresh stats
+                        } else {
+                            showError();
+                        }
+                    }
+                } else {
+                    showError();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError();
+            }
+
+            // Reset after delay
+            setTimeout(() => {
+                hideAllScreens();
+                document.getElementById('welcomeScreen').classList.remove('d-none');
+                isProcessing = false;
+            }, 5000);
+        }
+
+        // Show screens
+        function hideAllScreens() {
+            document.getElementById('welcomeScreen').classList.add('d-none');
+            document.getElementById('successScreen').classList.add('d-none');
+            document.getElementById('alreadyCheckedScreen').classList.add('d-none');
+            document.getElementById('errorScreen').classList.add('d-none');
+        }
+
+        function showSuccess(guest) {
+            hideAllScreens();
+            document.getElementById('guestName').textContent = guest.nama;
+
+            if (guest.tableNumber) {
+                document.getElementById('guestTable').textContent = `Meja: ${guest.tableNumber}`;
+                document.getElementById('guestTable').style.display = 'block';
+            } else {
+                document.getElementById('guestTable').style.display = 'none';
+            }
+
+            document.getElementById('successScreen').classList.remove('d-none');
+        }
+
+        function showAlreadyChecked(guest) {
+            hideAllScreens();
+            document.getElementById('alreadyName').textContent = guest.nama;
+            document.getElementById('alreadyCheckedScreen').classList.remove('d-none');
+        }
+
+        function showError() {
+            hideAllScreens();
+            document.getElementById('errorScreen').classList.remove('d-none');
+        }
+
+        // Play beep
+        function playBeep() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = 1000;
+            oscillator.type = 'sine';
+            gainNode.gain.value = 0.3;
+
+            oscillator.start();
+            setTimeout(() => oscillator.stop(), 150);
+        }
+
+        // Toggle fullscreen
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Exit kiosk
+        function exitKiosk() {
+            if (confirm('Keluar dari mode kiosk?')) {
+                if (html5QrcodeScanner) {
+                    html5QrcodeScanner.stop();
+                }
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        // Initialize
+        loadEventDetails();
+        startScanner();
+    </script>
+</body>
+
+</html>

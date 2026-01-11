@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AW Digital Guestbook - Digital Invitation Generator">
+    <title>Undangan Digital | AW Digital Guestbook</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- QRCode.js (browser version) -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs2@0.0.2/qrcode.min.js"></script>
+    <!-- html2canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .invitation-preview {
+            max-width: 400px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .invitation-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            color: white;
+            text-align: center;
+        }
+
+        .invitation-card.template-elegant {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .invitation-card.template-nature {
+            background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+        }
+
+        .invitation-card.template-romantic {
+            background: linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%);
+            color: #333;
+        }
+
+        .invitation-header {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 1.5rem;
+        }
+
+        .invitation-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .invitation-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .invitation-guest {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 1rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+        }
+
+        .invitation-guest-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .invitation-details {
+            margin: 1.5rem 0;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .invitation-detail-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .invitation-detail-item i {
+            width: 30px;
+            text-align: center;
+        }
+
+        .invitation-qr {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 1rem 0;
+        }
+
+        .invitation-footer {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 1rem;
+        }
+
+        .template-option {
+            cursor: pointer;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .template-option.active {
+            border-color: var(--accent-color);
+        }
+
+        .template-option:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-navbar">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="dashboard.html">
+                <i class="fas fa-book-open me-2"></i>AW Digital
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage.html">
+                            <i class="fas fa-users-cog me-1"></i>Kelola
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section" style="min-height: 30vh; padding: 100px 0 40px;">
+        <div class="container text-center">
+            <div class="hero-content">
+                <h1 class="display-5 fw-bold mb-2 animate-fade-in">
+                    <i class="fas fa-envelope-open-text me-3"></i>Undangan Digital
+                </h1>
+                <p class="lead mb-0 animate-fade-in-delay">
+                    Buat undangan digital dengan QR Code
+                </p>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path d="M0,64 C288,120 576,0 864,64 C1152,128 1344,32 1440,64 L1440,120 L0,120 Z"
+                    fill="var(--bg-dark)"></path>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content" style="padding-top: 2rem;">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Guest Selection -->
+                <div class="col-lg-4">
+                    <div class="glass-card">
+                        <div class="card-header-custom">
+                            <h3><i class="fas fa-user me-2"></i>Pilih Tamu</h3>
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="searchGuest" placeholder="Cari tamu...">
+                        </div>
+
+                        <div id="guestList" style="max-height: 300px; overflow-y: auto;">
+                            <p class="text-muted text-center">Memuat...</p>
+                        </div>
+                    </div>
+
+                    <!-- Templates -->
+                    <div class="glass-card mt-4">
+                        <div class="card-header-custom">
+                            <h3><i class="fas fa-palette me-2"></i>Template</h3>
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="template-option active" data-template="default"
+                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 60px;">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="template-option" data-template="elegant"
+                                    style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); height: 60px;">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="template-option" data-template="nature"
+                                    style="background: linear-gradient(135deg, #134e5e 0%, #71b280 100%); height: 60px;">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="template-option" data-template="romantic"
+                                    style="background: linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%); height: 60px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="col-lg-8">
+                    <div class="glass-card">
+                        <div class="card-header-custom d-flex justify-content-between align-items-center">
+                            <h3><i class="fas fa-eye me-2"></i>Preview</h3>
+                            <div>
+                                <button class="btn btn-primary btn-sm me-2" onclick="downloadInvitation()"
+                                    id="downloadBtn" disabled>
+                                    <i class="fas fa-download me-1"></i>Download
+                                </button>
+                                <button class="btn btn-success btn-sm" onclick="shareWhatsApp()" id="shareBtn" disabled>
+                                    <i class="fab fa-whatsapp me-1"></i>Share
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="text-center" id="noSelection">
+                            <i class="fas fa-hand-pointer fa-3x mb-3" style="color: var(--text-muted);"></i>
+                            <p class="text-muted">Pilih tamu untuk membuat undangan</p>
+                        </div>
+
+                        <div class="invitation-preview d-none" id="invitationPreview">
+                            <div class="invitation-card" id="invitationCard">
+                                <div class="invitation-header">
+                                    <p class="invitation-subtitle mb-1">Dengan hormat mengundang</p>
+                                    <h2 class="invitation-title" id="invEventName">-</h2>
+                                </div>
+
+                                <div class="invitation-guest">
+                                    <small>Kepada Yth.</small>
+                                    <p class="invitation-guest-name mb-0" id="invGuestName">-</p>
+                                </div>
+
+                                <div class="invitation-details">
+                                    <div class="invitation-detail-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span id="invDate">-</span>
+                                    </div>
+                                    <div class="invitation-detail-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span id="invTime">-</span>
+                                    </div>
+                                    <div class="invitation-detail-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span id="invLocation">-</span>
+                                    </div>
+                                </div>
+
+                                <div class="invitation-qr">
+                                    <div id="invQrCode"></div>
+                                </div>
+
+
+                                <p class="invitation-footer">
+                                    <small>Tunjukkan QR Code ini saat datang</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="mb-0"><i class="fas fa-code me-2"></i>AW Digital Guestbook &copy; 2024</p>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const API_BASE = 'api';
+        let currentEventId = null;
+        let currentEvent = null;
+        let guests = [];
+        let selectedGuest = null;
+        let currentTemplate = 'default';
+
+        // Get event from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        currentEventId = urlParams.get('event');
+
+        if (!currentEventId) {
+            // Try to get from session
+            checkAuth();
+        } else {
+            loadEventDetails();
+            loadGuests();
+        }
+
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/auth.php?action=check`);
+                const data = await response.json();
+                if (!data.authenticated) {
+                    window.location.href = 'login.html';
+                } else {
+                    // Get first event
+                    const eventsResponse = await fetch(`${API_BASE}/events.php`);
+                    const eventsData = await eventsResponse.json();
+                    if (eventsData.success && eventsData.data.length > 0) {
+                        currentEventId = eventsData.data[0].id;
+                        loadEventDetails();
+                        loadGuests();
+                    }
+                }
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function loadEventDetails() {
+            try {
+                const response = await fetch(`${API_BASE}/events.php?id=${currentEventId}`);
+                const data = await response.json();
+                if (data.success) {
+                    currentEvent = data.data;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function loadGuests() {
+            try {
+                const response = await fetch(`${API_BASE}/guests.php?event_id=${currentEventId}`);
+                const data = await response.json();
+                if (data.success) {
+                    guests = data.data;
+                    renderGuestList(guests);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function renderGuestList(data) {
+            const container = document.getElementById('guestList');
+
+            if (data.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">Tidak ada tamu</p>';
+                return;
+            }
+
+            let html = '';
+            data.forEach(guest => {
+                html += `
+                    <div class="d-flex justify-content-between align-items-center p-2 mb-2" 
+                         style="background: var(--bg-glass); border-radius: 8px; cursor: pointer;"
+                         onclick="selectGuest(${guest.id})">
+                        <div>
+                            <strong>${escapeHtml(guest.nama)}</strong>
+                            <br><small class="text-muted">${escapeHtml(guest.email)}</small>
+                        </div>
+                        <i class="fas fa-chevron-right text-muted"></i>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Search
+        document.getElementById('searchGuest').addEventListener('input', (e) => {
+            const search = e.target.value.toLowerCase();
+            const filtered = guests.filter(g =>
+                g.nama.toLowerCase().includes(search) ||
+                g.email.toLowerCase().includes(search)
+            );
+            renderGuestList(filtered);
+        });
+
+        // Select guest
+        function selectGuest(guestId) {
+            selectedGuest = guests.find(g => g.id === guestId);
+            if (!selectedGuest) return;
+
+            document.getElementById('noSelection').classList.add('d-none');
+            document.getElementById('invitationPreview').classList.remove('d-none');
+            document.getElementById('downloadBtn').disabled = false;
+            document.getElementById('shareBtn').disabled = false;
+
+            updatePreview();
+        }
+
+        // Update preview
+        function updatePreview() {
+            if (!selectedGuest || !currentEvent) return;
+
+            document.getElementById('invEventName').textContent = currentEvent.name;
+            document.getElementById('invGuestName').textContent = selectedGuest.nama;
+
+            if (currentEvent.eventDate) {
+                const date = new Date(currentEvent.eventDate).toLocaleDateString('id-ID', {
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+                });
+                document.getElementById('invDate').textContent = date;
+            } else {
+                document.getElementById('invDate').textContent = 'Segera diumumkan';
+            }
+
+            document.getElementById('invTime').textContent = currentEvent.eventTime || 'Segera diumumkan';
+            document.getElementById('invLocation').textContent = currentEvent.location || 'Segera diumumkan';
+
+            // Generate QR - clear and recreate
+            const qrContainer = document.getElementById('invQrCode').parentElement;
+            qrContainer.innerHTML = '<div id="invQrCode"></div>';
+            new QRCode(document.getElementById('invQrCode'), {
+                text: selectedGuest.qrCode,
+                width: 120,
+                height: 120,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // Apply template
+            const card = document.getElementById('invitationCard');
+            card.className = 'invitation-card';
+            if (currentTemplate !== 'default') {
+                card.classList.add('template-' + currentTemplate);
+            }
+        }
+
+        // Template selection
+        document.querySelectorAll('.template-option').forEach(option => {
+            option.addEventListener('click', function () {
+                document.querySelectorAll('.template-option').forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+                currentTemplate = this.dataset.template;
+                updatePreview();
+            });
+        });
+
+        // Download invitation
+        async function downloadInvitation() {
+            if (!selectedGuest) return;
+
+            const card = document.getElementById('invitationCard');
+
+            try {
+                const canvas = await html2canvas(card, {
+                    scale: 2,
+                    backgroundColor: null
+                });
+
+                const link = document.createElement('a');
+                link.download = `Undangan_${selectedGuest.nama.replace(/\s+/g, '_')}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                showToast('Undangan berhasil didownload!', 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Gagal download undangan', 'danger');
+            }
+        }
+
+        // Share WhatsApp
+        function shareWhatsApp() {
+            if (!selectedGuest || !currentEvent) return;
+
+            const date = currentEvent.eventDate
+                ? new Date(currentEvent.eventDate).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+                : 'Segera diumumkan';
+
+            const message = `Yth. ${selectedGuest.nama},\n\nDengan hormat kami mengundang Anda untuk hadir pada:\n\n*${currentEvent.name}*\n\n📅 ${date}\n⏰ ${currentEvent.eventTime || 'Segera diumumkan'}\n📍 ${currentEvent.location || 'Segera diumumkan'}\n\nKode QR Anda: ${selectedGuest.qrCode}\n\nTerima kasih atas kehadirannya.`;
+
+            const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        // Helpers
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast show toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <i class="fas fa-${type === 'success' ? 'check-circle text-success' : 'info-circle'} me-2"></i>
+                    <strong class="me-auto">Notifikasi</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">${message}</div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+
+</html>
